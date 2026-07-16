@@ -1,0 +1,232 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:5780889753406196401",
+      "lastPropertyId": "5:5174611090557944875",
+      "name": "ActivityTaken",
+      "properties": [
+        {
+          "id": "1:4800762355988982389",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6709999348184805016",
+          "name": "date",
+          "type": 9
+        },
+        {
+          "id": "3:1342210441086776944",
+          "name": "rating",
+          "type": 5
+        },
+        {
+          "id": "4:3791413529606966587",
+          "name": "isTaken",
+          "type": 1
+        },
+        {
+          "id": "5:5174611090557944875",
+          "name": "activityId",
+          "indexId": "1:5008045226438306229",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "DailyActivity"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:7955238806004206722",
+      "lastPropertyId": "7:4604934723041839343",
+      "name": "DailyActivity",
+      "properties": [
+        {
+          "id": "1:3559036230595786730",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2481396065977940782",
+          "name": "name",
+          "indexId": "2:3427308103324242408",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:8713193231078484122",
+          "name": "hour",
+          "type": 5
+        },
+        {
+          "id": "4:5159751902036131072",
+          "name": "minute",
+          "type": 5
+        },
+        {
+          "id": "5:7612657218993930953",
+          "name": "daysOfWeek",
+          "type": 5
+        },
+        {
+          "id": "6:7679971803835079531",
+          "name": "typeOfRecorder",
+          "type": 5
+        },
+        {
+          "id": "7:4604934723041839343",
+          "name": "isAlarmEnabled",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:3075313512705688184",
+      "lastPropertyId": "3:2235984004340641222",
+      "name": "NumberTwo",
+      "properties": [
+        {
+          "id": "1:8354106846529037704",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7987064736866790861",
+          "name": "date",
+          "indexId": "3:6588877914340897062",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:2235984004340641222",
+          "name": "isTaken",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:6848132939821373694",
+      "lastPropertyId": "2:5388876282020282211",
+      "name": "Pill",
+      "properties": [
+        {
+          "id": "1:2298476014199410017",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5388876282020282211",
+          "name": "name",
+          "indexId": "4:9138048942123702250",
+          "type": 9,
+          "flags": 2080
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:3352043212653338534",
+      "lastPropertyId": "4:1665050710589284658",
+      "name": "PillTaken",
+      "properties": [
+        {
+          "id": "1:3702706333408743525",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4647310198052448776",
+          "name": "date",
+          "type": 9
+        },
+        {
+          "id": "3:1915453726496726985",
+          "name": "isTaken",
+          "type": 1
+        },
+        {
+          "id": "4:1665050710589284658",
+          "name": "pillId",
+          "indexId": "5:7495479886536938820",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Pill"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:1213380392255727922",
+      "lastPropertyId": "3:5882006279770152477",
+      "name": "Water",
+      "properties": [
+        {
+          "id": "1:13443832282281929",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:191071853358512276",
+          "name": "date",
+          "indexId": "6:2793224332002413559",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:5882006279770152477",
+          "name": "volume",
+          "type": 7
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:5327316388069013803",
+      "lastPropertyId": "3:5201566483936212994",
+      "name": "Weight",
+      "properties": [
+        {
+          "id": "1:8468815477307286815",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2947033524647995767",
+          "name": "date",
+          "indexId": "7:3407051716866120485",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:5201566483936212994",
+          "name": "weight",
+          "type": 7
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "7:5327316388069013803",
+  "lastIndexId": "7:3407051716866120485",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
