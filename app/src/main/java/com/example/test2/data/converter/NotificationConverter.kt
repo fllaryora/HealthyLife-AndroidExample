@@ -1,12 +1,12 @@
 package com.example.test2.data.converter
 
 import com.example.test2.data.entities.enums.TypeofRecorder
-import com.example.test2.data.entities.implementations.DailyActivity
+import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.data.notification.Notification
 
 object NotificationConverter {
     fun convertActivityToNotification(title :String,
-                                      activity: DailyActivity,
+                                      activity: DailyActivityEntity,
                                       dayOfYear:Int): Notification {
         return Notification(notificationTitle = title,
             notificationTicker= activity.name,

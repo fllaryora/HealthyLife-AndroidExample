@@ -1,21 +1,21 @@
 package com.example.test2.data.dao.exportables
 
-import com.example.test2.data.dao.implementations.ActivityDAO
-import com.example.test2.data.dao.implementations.ActivityTakenDAO
-import com.example.test2.data.dao.implementations.PillDAO
-import com.example.test2.data.dao.implementations.WaterDAO
+import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
+import com.example.test2.features.recordactivity.data.local.ActivityTakenDAOImpl
+import com.example.test2.features.pill.data.local.PillDAOImpl
 import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.data.entities.exportables.ExportEntity
-import com.example.test2.data.entities.implementations.ActivityTaken
-import com.example.test2.data.entities.implementations.DailyActivity
-import com.example.test2.data.entities.implementations.NumberTwo
-import com.example.test2.data.entities.implementations.Pill
-import com.example.test2.data.entities.implementations.PillTaken
-import com.example.test2.data.entities.implementations.Water
+import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
+import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
+import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
+import com.example.test2.features.pill.data.local.PillEntity
+import com.example.test2.features.recordpill.data.local.PillTakenEntity
+import com.example.test2.features.water.data.local.WaterEntity
 import com.example.test2.features.weight.data.local.WeightEntity
 import android.util.Log
-import com.example.test2.data.dao.implementations.NumberTwoDAO
-import com.example.test2.data.dao.implementations.PillTakenDAO
+import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
+import com.example.test2.features.recordpill.data.local.PillTakenDAOImpl
+import com.example.test2.features.water.data.local.WaterDAOImpl
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -24,14 +24,14 @@ object ExportDAO {
 
     fun getExport(): String {
         val weightEntities: List<WeightEntity> = WeightDAOImpl.getAll()
-        val waters: List<Water> = WaterDAO.getAll()
-        val numberTwos: List<NumberTwo> = NumberTwoDAO.getAll()
-        val pills: List<Pill> = PillDAO.getPills()
-        val dailyActivities : List<DailyActivity> = ActivityDAO.getActivities()
-        val pillsTaken : List<PillTaken> = PillTakenDAO.getAll()
-        val activitiesTaken: List<ActivityTaken> = ActivityTakenDAO.getAll()
+        val waters: List<WaterEntity> = WaterDAOImpl.getAll()
+        val numberTwoEntities: List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
+        val pillEntities: List<PillEntity> = PillDAOImpl.getPills()
+        val dailyActivities : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
+        val pillsTaken : List<PillTakenEntity> = PillTakenDAOImpl.getAll()
+        val activitiesTaken: List<ActivityTakenEntity> = ActivityTakenDAOImpl.getAll()
         for(pillTaken in pillsTaken){
-            pillTaken.exportPillId = pillTaken.pill.targetId
+            pillTaken.exportPillId = pillTaken.pillEntity.targetId
         }
         for(activityTaken in activitiesTaken){
             activityTaken.exportActivityId = activityTaken.activity.targetId
@@ -39,8 +39,8 @@ object ExportDAO {
         val export :ExportEntity = ExportEntity(
             dailyActivities = dailyActivities,
             activitiesTaken = activitiesTaken,
-            numberTwos = numberTwos,
-            pills = pills,
+            numberTwoEntities = numberTwoEntities,
+            pillEntities = pillEntities,
             pillsTaken = pillsTaken,
             waters = waters,
             weightEntities = weightEntities
@@ -74,11 +74,11 @@ object ExportDAO {
     }
 
     private fun importWaters(importEntity: ExportEntity) {
-        val waters: List<Water> = importEntity.waters
+        val waters: List<WaterEntity> = importEntity.waters
         for (water in waters) {
             water.id = 0L
             try {
-                WaterDAO.insert(water)
+                WaterDAOImpl.insert(water)
             } catch (e: Exception) {
                 Log.e("ExportDAO water", e.message.toString())
             }
@@ -86,11 +86,11 @@ object ExportDAO {
     }
 
     private fun importBathroomVisits(importEntity: ExportEntity) {
-        val numberTwos: List<NumberTwo> = importEntity.numberTwos
-        for (numberTwo in numberTwos) {
+        val numberTwoEntities: List<NumberTwoEntity> = importEntity.numberTwoEntities
+        for (numberTwo in numberTwoEntities) {
             numberTwo.id = 0L
             try {
-                NumberTwoDAO.insert(numberTwo)
+                NumberTwoDAOImpl.insert(numberTwo)
             } catch (e: Exception) {
                 // A User with that name already exists.
                 Log.e("ExportDAO WC", e.message.toString())
@@ -99,21 +99,21 @@ object ExportDAO {
     }
 
     private fun importPills(importEntity: ExportEntity) {
-        val pills: List<Pill> = importEntity.pills
+        val pillEntities: List<PillEntity> = importEntity.pillEntities
 
-        for (pill in pills) {
+        for (pill in pillEntities) {
             val oldId = pill.id
             var newId = 0L
             pill.id = 0L
             try {
-                newId = PillDAO.insert(pill)
+                newId = PillDAOImpl.insert(pill)
             } catch (e: Exception) {
                 Log.e("ExportDAO PILL", e.message.toString())
             }
             importEntity.pillsTaken.filter { it.exportPillId == oldId }.forEach {
-                it.pill.targetId = newId
+                it.pillEntity.targetId = newId
                 try {
-                    PillTakenDAO.insert(it)
+                    PillTakenDAOImpl.insert(it)
                 } catch (e: Exception) {
                     // A User with that name already exists.
                     Log.e("ExportDAO PILL TAKEN", e.message.toString())
@@ -123,21 +123,21 @@ object ExportDAO {
     }
 
     private fun importActivities(importEntity: ExportEntity) {
-        val activities: List<DailyActivity> = importEntity.dailyActivities
+        val activities: List<DailyActivityEntity> = importEntity.dailyActivities
 
         for (currentActivity in activities) {
             val oldId = currentActivity.id
             var newId = 0L
             currentActivity.id = 0L
             try {
-                newId = ActivityDAO.insert(currentActivity)
+                newId = ActivityDAOImpl.insert(currentActivity)
             } catch (e: Exception) {
                 Log.e("ExportDAO ACTIVITY", e.message.toString())
             }
             importEntity.activitiesTaken.filter { it.exportActivityId == oldId }.forEach {
                 it.activity.targetId = newId
                 try {
-                    ActivityTakenDAO.insert(it)
+                    ActivityTakenDAOImpl.insert(it)
                 } catch (e: Exception) {
                     // A User with that name already exists.
                     Log.e("ExportDAO ACTIVITY TAKEN", e.message.toString())

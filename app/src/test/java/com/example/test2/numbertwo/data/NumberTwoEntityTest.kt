@@ -1,8 +1,8 @@
-package com.example.test2.weight.data.local
+package com.example.test2.numbertwo.data
 
 import com.example.test2.features.MyObjectBox
-import com.example.test2.features.weight.data.local.WeightDAOImpl
-import com.example.test2.features.weight.data.local.WeightEntity
+import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
+import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
@@ -15,7 +15,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlin.random.Random
 
-open class WeightDAOImpTest {
+open class NumberTwoEntityTest {
 
     private var _store: BoxStore? = null
     protected val store: BoxStore
@@ -24,12 +24,6 @@ open class WeightDAOImpTest {
     private fun coin(from: Int, until: Int): Int {
         return Random(System.nanoTime()).nextInt(from = from, until = until)
     }
-
-    private fun rand(): Float {
-        return Random(System.nanoTime()).nextDouble(70.0, 180.0).toFloat()
-    }
-
-
 
     @Before
     fun setUp() {
@@ -43,8 +37,8 @@ open class WeightDAOImpTest {
             .debugFlags(DebugFlags.LOG_QUERIES or DebugFlags.LOG_QUERY_PARAMETERS)
             .build()
 
-        val mWeightEntityBox: Box<WeightEntity> = store.boxFor(WeightEntity::class.java)
-        WeightDAOImpl.initialize(mWeightEntityBox)
+        val mNumberTwoEntityBox: Box<NumberTwoEntity> = store.boxFor(NumberTwoEntity::class.java)
+        NumberTwoDAOImpl.initialize(mNumberTwoEntityBox)
     }
 
     @After
@@ -57,13 +51,16 @@ open class WeightDAOImpTest {
     @Test
     fun fetchEmptyDataBaseShouldReturnZeroRecords() {
         // Get a box and use ObjectBox as usual
-        val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
-        val allList : List<WeightEntity> = WeightDAOImpl.getAll()
-        val pair : Pair<List<WeightEntity>, Float?> = WeightDAOImpl.getWeightsAndFirstDay(0L, 20L)
+        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+            2025, 10, 25, 14, 30, 0, 0,
+            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        )
+        val list: List<NumberTwoEntity> = NumberTwoDAOImpl.getNumberTwoList(0L, 20L)
+        val allList : List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
+
         Assert.assertEquals(0, list.size)
         Assert.assertEquals(0, allList.size)
-        Assert.assertEquals(0, pair.first.size)
-        Assert.assertEquals(null, pair.second)
+
     }
 
     @Test
@@ -73,51 +70,56 @@ open class WeightDAOImpTest {
             ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
         val aDay = 1L
+        val days = 50
+        var lastInsert = 0L
         val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
+        for( i  in 1..days) {
+            lastInsert = NumberTwoDAOImpl.insert(NumberTwoEntity(0L, someDayAtTheMorning))
+            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
+                .withHour(7).withMinute(0)
         }
 
-        val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
-        val allList : List<WeightEntity> = WeightDAOImpl.getAll()
-        val pair : Pair<List<WeightEntity>, Float?> = WeightDAOImpl.getWeightsAndFirstDay(0L, 20L)
+        val list: List<NumberTwoEntity> = NumberTwoDAOImpl.getNumberTwoList(0L, 20L)
+        val allList : List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
         Assert.assertEquals(20, list.size)
-        Assert.assertEquals(36, allList.size)
-        Assert.assertEquals(20, pair.first.size)
-        Assert.assertEquals(488818.0f, pair.second)
+        Assert.assertEquals(days, allList.size)
+
     }
 
     @Test
     fun deleteAllEmptyTableShouldNotThrowException() {
-        WeightDAOImpl.deleteAll()
+        NumberTwoDAOImpl.deleteAll()
     }
 
     @Test
     fun sparse() {
         val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+                2025, 10, 25, 14, 30, 0, 0,
+        ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
         val aDay = 1L
+        val days = 50
+        var lastInsert = 0L
         val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
+        for( i  in 1..days) {
+            lastInsert = NumberTwoDAOImpl.insert(NumberTwoEntity(0L, someDayAtTheMorning))
+            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
+                .withHour(7).withMinute(0)
         }
 
-        var allList = WeightDAOImpl.getAll()
+        var allList = NumberTwoDAOImpl.getAll()
         val touch : Int  = coin(0, allList.size-1)
-        allList.forEachIndexed { index, weightEntity : WeightEntity ->
+        allList.forEachIndexed { index, water : NumberTwoEntity ->
             if( index != touch){
-                WeightDAOImpl.delete(weightEntity)
+                NumberTwoDAOImpl.delete(water)
             }
         }
 
-        allList = WeightDAOImpl.getAll()
-
+        val list: List<NumberTwoEntity> = NumberTwoDAOImpl.getNumberTwoList(0L, 20L)
+        allList = NumberTwoDAOImpl.getAll()
+        Assert.assertEquals(1, list.size)
         Assert.assertEquals(1, allList.size)
 
     }

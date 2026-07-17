@@ -1,6 +1,6 @@
 package com.example.test2.weight.data.repository
 
-import com.example.test2.MyObjectBox
+import com.example.test2.features.MyObjectBox
 import com.example.test2.data.converter.TimeConverter
 import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.features.weight.data.local.WeightEntity

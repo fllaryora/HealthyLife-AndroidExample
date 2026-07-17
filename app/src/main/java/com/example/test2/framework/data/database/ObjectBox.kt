@@ -1,7 +1,7 @@
 package com.example.test2.framework.data.database
 
 import android.content.Context
-import com.example.test2.MyObjectBox
+import com.example.test2.features.MyObjectBox
 
 import io.objectbox.BoxStore
 

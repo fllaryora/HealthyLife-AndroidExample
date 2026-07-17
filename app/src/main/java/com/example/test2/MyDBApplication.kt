@@ -1,19 +1,19 @@
 package com.example.test2
 
 import android.app.Application
-import com.example.test2.data.dao.implementations.ActivityDAO
-import com.example.test2.data.dao.implementations.ActivityTakenDAO
-import com.example.test2.data.dao.implementations.NumberTwoDAO
-import com.example.test2.data.dao.implementations.PillDAO
-import com.example.test2.data.dao.implementations.PillTakenDAO
-import com.example.test2.data.dao.implementations.WaterDAO
+import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
+import com.example.test2.features.recordactivity.data.local.ActivityTakenDAOImpl
+import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
+import com.example.test2.features.pill.data.local.PillDAOImpl
+import com.example.test2.features.recordpill.data.local.PillTakenDAOImpl
 import com.example.test2.features.weight.data.local.WeightDAOImpl
-import com.example.test2.data.entities.implementations.ActivityTaken
-import com.example.test2.data.entities.implementations.DailyActivity
-import com.example.test2.data.entities.implementations.NumberTwo
-import com.example.test2.data.entities.implementations.Pill
-import com.example.test2.data.entities.implementations.PillTaken
-import com.example.test2.data.entities.implementations.Water
+import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
+import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
+import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
+import com.example.test2.features.pill.data.local.PillEntity
+import com.example.test2.features.recordpill.data.local.PillTakenEntity
+import com.example.test2.features.water.data.local.WaterDAOImpl
+import com.example.test2.features.water.data.local.WaterEntity
 import com.example.test2.features.weight.data.local.WeightEntity
 import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
 import com.example.test2.framework.data.database.ObjectBox
@@ -31,23 +31,23 @@ class MyDBApplication: Application() {
         WeightDAOImpl.initialize(mWeightEntityBox)
         WeightRepositoryImpl.initialize(WeightDAOImpl, Dispatchers.IO)
 
-        val mWaterBox: Box<Water> = ObjectBox.mBoxStore.boxFor(Water::class.java)
-        WaterDAO.initialize(mWaterBox)
+        val mWaterBox: Box<WaterEntity> = ObjectBox.mBoxStore.boxFor(WaterEntity::class.java)
+        WaterDAOImpl.initialize(mWaterBox)
 
-        val mPillBox: Box<Pill> = ObjectBox.mBoxStore.boxFor(Pill::class.java)
-        PillDAO.initialize(mPillBox)
+        val mPillEntityBox: Box<PillEntity> = ObjectBox.mBoxStore.boxFor(PillEntity::class.java)
+        PillDAOImpl.initialize(mPillEntityBox)
 
-        val mPillTakenBox: Box<PillTaken> = ObjectBox.mBoxStore.boxFor(PillTaken::class.java)
-        PillTakenDAO.initialize(mPillTakenBox)
+        val mPillTakenEntityBox: Box<PillTakenEntity> = ObjectBox.mBoxStore.boxFor(PillTakenEntity::class.java)
+        PillTakenDAOImpl.initialize(mPillTakenEntityBox)
 
-        val mNumberTwoBox: Box<NumberTwo> = ObjectBox.mBoxStore.boxFor(NumberTwo::class.java)
-        NumberTwoDAO.initialize(mNumberTwoBox)
+        val mNumberTwoEntityBox: Box<NumberTwoEntity> = ObjectBox.mBoxStore.boxFor(NumberTwoEntity::class.java)
+        NumberTwoDAOImpl.initialize(mNumberTwoEntityBox)
 
-        val mActivityBox : Box<DailyActivity> = ObjectBox.mBoxStore.boxFor(DailyActivity::class.java)
-        ActivityDAO.initialize(mActivityBox)
+        val mActivityBox : Box<DailyActivityEntity> = ObjectBox.mBoxStore.boxFor(DailyActivityEntity::class.java)
+        ActivityDAOImpl.initialize(mActivityBox)
 
-        val mActivityTakenBox: Box<ActivityTaken>  = ObjectBox.mBoxStore.boxFor(ActivityTaken::class.java)
-        ActivityTakenDAO.initialize(mActivityTakenBox)
+        val mActivityTakenEntityBox: Box<ActivityTakenEntity>  = ObjectBox.mBoxStore.boxFor(ActivityTakenEntity::class.java)
+        ActivityTakenDAOImpl.initialize(mActivityTakenEntityBox)
 
     }
 

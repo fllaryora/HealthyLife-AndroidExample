@@ -1,8 +1,8 @@
-package com.example.test2.weight.data.local
+package com.example.test2.water.data.local
 
 import com.example.test2.features.MyObjectBox
-import com.example.test2.features.weight.data.local.WeightDAOImpl
-import com.example.test2.features.weight.data.local.WeightEntity
+import com.example.test2.features.water.data.local.WaterEntity
+import com.example.test2.features.water.data.local.WaterDAOImpl
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
@@ -13,9 +13,10 @@ import org.junit.Test
 import java.io.File
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import kotlin.collections.forEachIndexed
 import kotlin.random.Random
 
-open class WeightDAOImpTest {
+open class WaterTest {
 
     private var _store: BoxStore? = null
     protected val store: BoxStore
@@ -43,8 +44,8 @@ open class WeightDAOImpTest {
             .debugFlags(DebugFlags.LOG_QUERIES or DebugFlags.LOG_QUERY_PARAMETERS)
             .build()
 
-        val mWeightEntityBox: Box<WeightEntity> = store.boxFor(WeightEntity::class.java)
-        WeightDAOImpl.initialize(mWeightEntityBox)
+        val mWaterBox: Box<WaterEntity> = store.boxFor(WaterEntity::class.java)
+        WaterDAOImpl.initialize(mWaterBox)
     }
 
     @After
@@ -57,13 +58,16 @@ open class WeightDAOImpTest {
     @Test
     fun fetchEmptyDataBaseShouldReturnZeroRecords() {
         // Get a box and use ObjectBox as usual
-        val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
-        val allList : List<WeightEntity> = WeightDAOImpl.getAll()
-        val pair : Pair<List<WeightEntity>, Float?> = WeightDAOImpl.getWeightsAndFirstDay(0L, 20L)
+        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+            2025, 10, 25, 14, 30, 0, 0,
+            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        )
+        val list: List<WaterEntity> = WaterDAOImpl.getWaters(0L, 20L)
+        val allList : List<WaterEntity> = WaterDAOImpl.getAll()
+        val dayList : List<WaterEntity> = WaterDAOImpl.getIntakesByDay(fixedTime)
         Assert.assertEquals(0, list.size)
         Assert.assertEquals(0, allList.size)
-        Assert.assertEquals(0, pair.first.size)
-        Assert.assertEquals(null, pair.second)
+        Assert.assertEquals(0, dayList.size)
     }
 
     @Test
@@ -76,22 +80,27 @@ open class WeightDAOImpTest {
         val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
         for( i  in 1..36) {
-            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
+            WaterDAOImpl.insert(WaterEntity(0L, someDayAtTheMorning, rand()))
             someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
         }
 
-        val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
-        val allList : List<WeightEntity> = WeightDAOImpl.getAll()
-        val pair : Pair<List<WeightEntity>, Float?> = WeightDAOImpl.getWeightsAndFirstDay(0L, 20L)
+        val list: List<WaterEntity> = WaterDAOImpl.getWaters(0L, 20L)
+        val allList : List<WaterEntity> = WaterDAOImpl.getAll()
         Assert.assertEquals(20, list.size)
         Assert.assertEquals(36, allList.size)
-        Assert.assertEquals(20, pair.first.size)
-        Assert.assertEquals(488818.0f, pair.second)
+        someDayAtTheMorning = sinceAYearAgoAtTheMorning
+        for( i  in 1..36) {
+            val dayList : List<WaterEntity>  = WaterDAOImpl.getIntakesByDay(someDayAtTheMorning)
+            Assert.assertEquals(1, dayList.size)
+            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
+        }
+
+
     }
 
     @Test
     fun deleteAllEmptyTableShouldNotThrowException() {
-        WeightDAOImpl.deleteAll()
+        WaterDAOImpl.deleteAll()
     }
 
     @Test
@@ -104,19 +113,19 @@ open class WeightDAOImpTest {
         val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
         for( i  in 1..36) {
-            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
+            WaterDAOImpl.insert(WaterEntity(0L, someDayAtTheMorning, rand()))
             someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
         }
 
-        var allList = WeightDAOImpl.getAll()
+        var allList = WaterDAOImpl.getAll()
         val touch : Int  = coin(0, allList.size-1)
-        allList.forEachIndexed { index, weightEntity : WeightEntity ->
+        allList.forEachIndexed { index, water : WaterEntity ->
             if( index != touch){
-                WeightDAOImpl.delete(weightEntity)
+                WaterDAOImpl.delete(water)
             }
         }
 
-        allList = WeightDAOImpl.getAll()
+        allList = WaterDAOImpl.getAll()
 
         Assert.assertEquals(1, allList.size)
 
