@@ -72,11 +72,6 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
             .getAll()
             .collect { list ->
 
-
-                println(
-                    "Emission #${emissions.size + 1} -> size=${list.size}"
-                )
-
                 emissions.add(list)
 
                 when (emissions.size) {
@@ -85,7 +80,6 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
                 }
 
                 if (emissions.size == 3) {
-                    println("Second emission arrived")
                     cancel()
                 }
             }
@@ -142,11 +136,6 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
                 .getAll()
                 .collect { list ->
 
-
-                    println(
-                        "Emission #${emissions.size + 1} -> size=${list.size}"
-                    )
-
                     emissions.add(list)
 
                     when (emissions.size) {
@@ -155,7 +144,6 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
                     }
 
                     if (emissions.size == 3) {
-                        println("Second emission arrived")
                         cancel()
                     }
                 }
@@ -198,6 +186,67 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
             0,
             emissions[2].size
         )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun insert_should_emit_changes_after_insert_pagination_simple() = testScope.runTest {
+
+        val emissions = mutableListOf<List<WeightEntity>>()
+        val secondEmission = CompletableDeferred<Unit>()
+
+        val collectorJob = testScope.launch {
+
+            WeightRepositoryImpl
+                .getWeights(0L,20L)
+                .collect { list ->
+
+                    println(
+                        "Emission #${emissions.size + 1} -> size=${list.size}"
+                    )
+
+                    emissions.add(list)
+
+                    when (emissions.size) {
+                        2 -> secondEmission.complete(Unit)
+                    }
+
+                    if (emissions.size == 2) {
+                        println("Second emission arrived")
+                        cancel()
+                    }
+                }
+        }
+        advanceUntilIdle()
+        var entity : WeightEntity= WeightEntity(
+            id = 0L,
+            date = OffsetDateTime.now(),
+            weight = 1.5f
+        )
+
+        WeightRepositoryImpl.insert(
+            entity
+        )
+        advanceUntilIdle()
+        secondEmission.await()
+        collectorJob.join()
+        assertEquals(2, emissions.size)
+
+        assertEquals(
+            0,
+            emissions[0].size
+        )
+
+        assertEquals(
+            1,
+            emissions[1].size
+        )
+
+        assertEquals(
+            1.5f,
+            emissions[1][0].weight
+        )
+
     }
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")
