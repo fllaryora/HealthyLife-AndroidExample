@@ -1,6 +1,7 @@
 package com.example.test2.weight.data.repository
 
 import com.example.test2.MyObjectBox
+import com.example.test2.data.converter.TimeConverter
 import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.features.weight.data.local.WeightEntity
 import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
@@ -201,10 +202,6 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
                 .getWeights(0L,20L)
                 .collect { list ->
 
-                    println(
-                        "Emission #${emissions.size + 1} -> size=${list.size}"
-                    )
-
                     emissions.add(list)
 
                     when (emissions.size) {
@@ -212,7 +209,6 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
                     }
 
                     if (emissions.size == 2) {
-                        println("Second emission arrived")
                         cancel()
                     }
                 }
@@ -245,6 +241,90 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         assertEquals(
             1.5f,
             emissions[1][0].weight
+        )
+
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun insert_and_delete_should_emit_changes_after_insert_pagination_complex() = testScope.runTest {
+
+        val emissions = mutableListOf<Pair<List<WeightEntity>, Float?>>()
+        val secondEmission = CompletableDeferred<Unit>()
+        val thirdEmission = CompletableDeferred<Unit>()
+
+        val collectorJob = testScope.launch {
+
+            WeightRepositoryImpl
+                .getWeightsAndFirstDay(0L,20L)
+                .collect { list: Pair<List<WeightEntity>, Float?> ->
+
+                    println(
+                        "Emission #${emissions.size + 1} -> size=${list.first.size}"
+                    )
+
+                    emissions.add(list)
+
+                    when (emissions.size) {
+                        2 -> secondEmission.complete(Unit)
+                        3 -> thirdEmission.complete(Unit)
+                    }
+
+                    if (emissions.size == 3) {
+                        println("Second emission arrived")
+                        cancel()
+                    }
+                }
+        }
+        advanceUntilIdle()
+        val dateTimeExpected = OffsetDateTime.now()
+        val expectedFloat = TimeConverter.convertISOToHours(dateTimeExpected)
+
+        var entity : WeightEntity= WeightEntity(
+            id = 0L,
+            date = dateTimeExpected,
+            weight = 1.5f
+        )
+
+        WeightRepositoryImpl.insert(
+            entity
+        )
+        advanceUntilIdle()
+        secondEmission.await()
+
+        entity.id = 1L //little hack
+        WeightRepositoryImpl.delete(entity)
+        advanceUntilIdle()
+        thirdEmission.await()
+
+        collectorJob.join()
+        assertEquals(3, emissions.size)
+
+        assertEquals(
+            0,
+            emissions[0].first.size
+        )
+
+        assertEquals(
+            1,
+            emissions[1].first.size
+        )
+
+        assertEquals(
+            1.5f,
+            emissions[1].first[0].weight
+        )
+
+        val actualFloat = TimeConverter.convertISOToHours(emissions[1].first[0].getTime())
+
+        assertEquals(
+            expectedFloat,
+            actualFloat
+        )
+
+        assertEquals(
+            0,
+            emissions[2].first.size
         )
 
     }
