@@ -61,7 +61,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     // new
     implementation(libs.kotlinx.serialization.json)
-
+    implementation(libs.objectbox.kotlin)
+    implementation(libs.objectbox.android)
+    kapt(libs.objectbox.kotlin)
     testImplementation(libs.objectbox.testing.macos)
 
 }

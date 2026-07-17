@@ -1,5 +1,6 @@
 package com.example.test2
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,9 +21,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import com.example.test2.features.weight.ui.WeightActivity
 import com.example.test2.ui.theme.Test2Theme
 
 class MainActivity : ComponentActivity() {
@@ -82,11 +86,25 @@ enum class AppDestinations(
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Greeting(
+    name: String,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    Button(
+        modifier = modifier,
+        onClick = {
+            context.startActivity(
+                Intent(
+                    context,
+                    WeightActivity::class.java
+                )
+            )
+        }
+    ) {
+        Text("Abrir Weight Screen")
+    }
 }
 /*
 @Preview(showBackground = true,

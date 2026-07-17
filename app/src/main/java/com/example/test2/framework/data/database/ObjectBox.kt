@@ -1,7 +1,8 @@
 package com.example.test2.framework.data.database
 
 import android.content.Context
-import com.example.test2.data.entities.implementations.MyObjectBox
+import com.example.test2.MyObjectBox
+
 import io.objectbox.BoxStore
 
 object ObjectBox {

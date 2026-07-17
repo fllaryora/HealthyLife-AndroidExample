@@ -4,7 +4,7 @@ import com.example.test2.data.dao.implementations.ActivityDAO
 import com.example.test2.data.dao.implementations.ActivityTakenDAO
 import com.example.test2.data.dao.implementations.PillDAO
 import com.example.test2.data.dao.implementations.WaterDAO
-import com.example.test2.data.dao.implementations.WeightDAO
+import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.data.entities.exportables.ExportEntity
 import com.example.test2.data.entities.implementations.ActivityTaken
 import com.example.test2.data.entities.implementations.DailyActivity
@@ -12,19 +12,18 @@ import com.example.test2.data.entities.implementations.NumberTwo
 import com.example.test2.data.entities.implementations.Pill
 import com.example.test2.data.entities.implementations.PillTaken
 import com.example.test2.data.entities.implementations.Water
-import com.example.test2.data.entities.implementations.Weight
+import com.example.test2.features.weight.data.local.WeightEntity
 import android.util.Log
 import com.example.test2.data.dao.implementations.NumberTwoDAO
 import com.example.test2.data.dao.implementations.PillTakenDAO
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 object ExportDAO {
 
     fun getExport(): String {
-        val weights: List<Weight> = WeightDAO.getAll()
+        val weightEntities: List<WeightEntity> = WeightDAOImpl.getAll()
         val waters: List<Water> = WaterDAO.getAll()
         val numberTwos: List<NumberTwo> = NumberTwoDAO.getAll()
         val pills: List<Pill> = PillDAO.getPills()
@@ -44,7 +43,7 @@ object ExportDAO {
             pills = pills,
             pillsTaken = pillsTaken,
             waters = waters,
-            weights = weights
+            weightEntities = weightEntities
         )
         return Json.encodeToString(export)
     }
@@ -63,11 +62,11 @@ object ExportDAO {
     }
 
     private fun importWeights(importEntity: ExportEntity) {
-        val weights: List<Weight> = importEntity.weights
-        for (weight in weights) {
+        val weightEntities: List<WeightEntity> = importEntity.weightEntities
+        for (weight in weightEntities) {
             weight.id = 0L
             try {
-                WeightDAO.insert(weight)
+                WeightDAOImpl.insert(weight)
             } catch (e: Exception) {
                 Log.e("ExportDAO weight", e.message.toString())
             }

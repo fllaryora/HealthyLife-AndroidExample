@@ -3,7 +3,7 @@ package com.example.test2.data
 import com.example.test2.data.converter.TimeConverter
 import com.example.test2.data.dao.implementations.PillDAO
 import com.example.test2.data.dao.implementations.PillTakenDAO
-import com.example.test2.data.entities.implementations.MyObjectBox
+import com.example.test2.MyObjectBox
 import com.example.test2.data.entities.implementations.Pill
 import com.example.test2.data.entities.implementations.PillTaken
 import io.objectbox.Box

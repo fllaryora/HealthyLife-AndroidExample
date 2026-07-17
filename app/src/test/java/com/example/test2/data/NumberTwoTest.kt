@@ -1,7 +1,7 @@
 package com.example.test2.data
 
 import com.example.test2.data.dao.implementations.NumberTwoDAO
-import com.example.test2.data.entities.implementations.MyObjectBox
+import com.example.test2.MyObjectBox
 import com.example.test2.data.entities.implementations.NumberTwo
 import io.objectbox.Box
 import io.objectbox.BoxStore

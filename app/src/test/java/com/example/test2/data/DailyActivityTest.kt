@@ -3,7 +3,7 @@ package com.example.test2.data
 import com.example.test2.data.dao.implementations.ActivityDAO
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.implementations.DailyActivity
-import com.example.test2.data.entities.implementations.MyObjectBox
+import com.example.test2.MyObjectBox
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags

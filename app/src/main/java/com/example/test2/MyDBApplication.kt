@@ -7,14 +7,15 @@ import com.example.test2.data.dao.implementations.NumberTwoDAO
 import com.example.test2.data.dao.implementations.PillDAO
 import com.example.test2.data.dao.implementations.PillTakenDAO
 import com.example.test2.data.dao.implementations.WaterDAO
-import com.example.test2.data.dao.implementations.WeightDAO
+import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.data.entities.implementations.ActivityTaken
 import com.example.test2.data.entities.implementations.DailyActivity
 import com.example.test2.data.entities.implementations.NumberTwo
 import com.example.test2.data.entities.implementations.Pill
 import com.example.test2.data.entities.implementations.PillTaken
 import com.example.test2.data.entities.implementations.Water
-import com.example.test2.data.entities.implementations.Weight
+import com.example.test2.features.weight.data.local.WeightEntity
+import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
 import com.example.test2.framework.data.database.ObjectBox
 import io.objectbox.Box
 
@@ -25,8 +26,9 @@ class MyDBApplication: Application() {
         super.onCreate()
         ObjectBox.init(this)
 
-        val mWeightBox: Box<Weight> = ObjectBox.mBoxStore.boxFor(Weight::class.java)
-        WeightDAO.initialize(mWeightBox)
+        val mWeightEntityBox: Box<WeightEntity> = ObjectBox.mBoxStore.boxFor(WeightEntity::class.java)
+        WeightDAOImpl.initialize(mWeightEntityBox)
+        WeightRepositoryImpl.initialize(WeightDAOImpl)
 
         val mWaterBox: Box<Water> = ObjectBox.mBoxStore.boxFor(Water::class.java)
         WaterDAO.initialize(mWaterBox)
@@ -45,6 +47,7 @@ class MyDBApplication: Application() {
 
         val mActivityTakenBox: Box<ActivityTaken>  = ObjectBox.mBoxStore.boxFor(ActivityTaken::class.java)
         ActivityTakenDAO.initialize(mActivityTakenBox)
+
     }
 
     /*For testing use

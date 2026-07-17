@@ -1,8 +1,8 @@
-package com.example.test2.data
+package com.example.test2.weight.data.local
 
-import com.example.test2.data.dao.implementations.WeightDAO
-import com.example.test2.data.entities.implementations.MyObjectBox
-import com.example.test2.data.entities.implementations.Weight
+import com.example.test2.MyObjectBox
+import com.example.test2.features.weight.data.local.WeightDAOImpl
+import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
@@ -15,8 +15,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlin.random.Random
 
-
-open class WeightTest {
+open class WeightDAOImpTest {
 
     private var _store: BoxStore? = null
     protected val store: BoxStore
@@ -44,8 +43,8 @@ open class WeightTest {
             .debugFlags(DebugFlags.LOG_QUERIES or DebugFlags.LOG_QUERY_PARAMETERS)
             .build()
 
-        val mWeightBox: Box<Weight> = store.boxFor(Weight::class.java)
-        WeightDAO.initialize(mWeightBox)
+        val mWeightEntityBox: Box<WeightEntity> = store.boxFor(WeightEntity::class.java)
+        WeightDAOImpl.initialize(mWeightEntityBox)
     }
 
     @After
@@ -58,9 +57,9 @@ open class WeightTest {
     @Test
     fun fetchEmptyDataBaseShouldReturnZeroRecords() {
         // Get a box and use ObjectBox as usual
-        val list: List<Weight> = WeightDAO.getWeights(0L, 20L)
-        val allList : List<Weight> = WeightDAO.getAll()
-        val pair : Pair<List<Weight>, Float?> = WeightDAO.getWeightsAndFirstDay(0L, 20L)
+        val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
+        val allList : List<WeightEntity> = WeightDAOImpl.getAll()
+        val pair : Pair<List<WeightEntity>, Float?> = WeightDAOImpl.getWeightsAndFirstDay(0L, 20L)
         Assert.assertEquals(0, list.size)
         Assert.assertEquals(0, allList.size)
         Assert.assertEquals(0, pair.first.size)
@@ -77,13 +76,13 @@ open class WeightTest {
         val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
         for( i  in 1..36) {
-            WeightDAO.insert(Weight(0L, someDayAtTheMorning, rand()))
+            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
             someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
         }
 
-        val list: List<Weight> = WeightDAO.getWeights(0L, 20L)
-        val allList : List<Weight> = WeightDAO.getAll()
-        val pair : Pair<List<Weight>, Float?> = WeightDAO.getWeightsAndFirstDay(0L, 20L)
+        val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
+        val allList : List<WeightEntity> = WeightDAOImpl.getAll()
+        val pair : Pair<List<WeightEntity>, Float?> = WeightDAOImpl.getWeightsAndFirstDay(0L, 20L)
         Assert.assertEquals(20, list.size)
         Assert.assertEquals(36, allList.size)
         Assert.assertEquals(20, pair.first.size)
@@ -92,7 +91,7 @@ open class WeightTest {
 
     @Test
     fun deleteAllEmptyTableShouldNotThrowException() {
-        WeightDAO.deleteAll()
+        WeightDAOImpl.deleteAll()
     }
 
     @Test
@@ -105,19 +104,19 @@ open class WeightTest {
         val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
         for( i  in 1..36) {
-            WeightDAO.insert(Weight(0L, someDayAtTheMorning, rand()))
+            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
             someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
         }
 
-        var allList = WeightDAO.getAll()
+        var allList = WeightDAOImpl.getAll()
         val touch : Int  = coin(0, allList.size-1)
-        allList.forEachIndexed { index, weight : Weight ->
+        allList.forEachIndexed { index, weightEntity : WeightEntity ->
             if( index != touch){
-                WeightDAO.delete(weight)
+                WeightDAOImpl.delete(weightEntity)
             }
         }
 
-        allList = WeightDAO.getAll()
+        allList = WeightDAOImpl.getAll()
 
         Assert.assertEquals(1, allList.size)
 

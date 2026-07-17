@@ -1,4 +1,4 @@
-package com.example.test2.data.entities.implementations
+package com.example.test2.features.weight.data.local
 
 import com.example.test2.data.entities.behaviors.Graphable
 import com.example.test2.data.entities.behaviors.Timelineable
@@ -8,6 +8,7 @@ import io.objectbox.annotation.Convert
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 import io.objectbox.annotation.Unique
+import kotlinx.serialization.Serializable
 import java.time.OffsetDateTime
 import java.util.Locale
 
@@ -36,16 +37,16 @@ import java.util.Locale
  */
 
 @Entity
-@kotlinx.serialization.Serializable
-data class Weight (
+@Serializable
+data class WeightEntity (
     @Id
     var id: Long = 0L,///must be called id and must be a Long :(
     @Convert(converter = TimeConverterForObjectBox::class, dbType = String::class)
-    @kotlinx.serialization.Serializable(with = TimeConverterForKotlinxSerializable::class)
+    @Serializable(with = TimeConverterForKotlinxSerializable::class)
     @Unique
     val date: OffsetDateTime,
     val weight: Float
-) : Graphable, Timelineable {
+): Graphable, Timelineable {
     /**
      * Returns the timestamp used as the X-axis value when plotting this
      * measurement in a graph.
