@@ -28,12 +28,13 @@ object  WeightRepositoryImpl: WeightRepository {
     ) {
         this.mWeightDAO = mWeightDAO
         this.mWeightEntityBox = mWeightDAO.getBox()
+        ioDispatcher = dispatcher
 
     }
 
     //tested OK
     override suspend fun insert(weightEntity: WeightEntity): Long {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             return@withContext mWeightDAO.insert(weightEntity)
         }
     }
@@ -42,7 +43,7 @@ object  WeightRepositoryImpl: WeightRepository {
         offset: Long,
         limit: Long
     ): Flow<Pair<List<WeightEntity>, Float?>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             flowOf(
                 mWeightDAO.getWeightsAndFirstDay(offset, limit)
             )
@@ -54,7 +55,7 @@ object  WeightRepositoryImpl: WeightRepository {
         offset: Long,
         limit: Long
     ): Flow<List<WeightEntity>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             flowOf(
                 mWeightDAO.getWeights(offset, limit)
             )
@@ -64,14 +65,14 @@ object  WeightRepositoryImpl: WeightRepository {
 
     //tested OK
     override suspend fun deleteAll() {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             return@withContext mWeightDAO.deleteAll()
         }
     }
 
     //tested OK
     override suspend fun delete(timelineable: WeightEntity): Boolean {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             return@withContext mWeightDAO.delete(timelineable)
         }
     }
@@ -81,7 +82,7 @@ object  WeightRepositoryImpl: WeightRepository {
     override suspend fun getAll(): Flow<List<WeightEntity>> {
         return  mWeightEntityBox.query().build().flow()
             .map { it.toList<WeightEntity>() }
-            .flowOn(Dispatchers.IO)
+            .flowOn(ioDispatcher)
     }
 
 }
