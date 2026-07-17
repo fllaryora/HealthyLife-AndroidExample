@@ -3,6 +3,7 @@ package com.example.test2.features.weight.data.repository
 import com.example.test2.features.weight.data.local.WeightDAO
 import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 
 interface WeightRepository {
@@ -15,7 +16,7 @@ interface WeightRepository {
      * @param mWeightDAO with ObjectBox box used to store and retrieve [WeightEntity] instances.
      */
 
-    fun initialize(mWeightDAO: WeightDAO) : Unit
+    fun initialize(mWeightDAO: WeightDAO, dispatcher: CoroutineDispatcher) : Unit
 
     /**
      * Persists a new weight record.

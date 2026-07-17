@@ -18,6 +18,7 @@ import com.example.test2.features.weight.data.local.WeightEntity
 import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
 import com.example.test2.framework.data.database.ObjectBox
 import io.objectbox.Box
+import kotlinx.coroutines.Dispatchers
 
 
 class MyDBApplication: Application() {
@@ -28,7 +29,7 @@ class MyDBApplication: Application() {
 
         val mWeightEntityBox: Box<WeightEntity> = ObjectBox.mBoxStore.boxFor(WeightEntity::class.java)
         WeightDAOImpl.initialize(mWeightEntityBox)
-        WeightRepositoryImpl.initialize(WeightDAOImpl)
+        WeightRepositoryImpl.initialize(WeightDAOImpl, Dispatchers.IO)
 
         val mWaterBox: Box<Water> = ObjectBox.mBoxStore.boxFor(Water::class.java)
         WaterDAO.initialize(mWaterBox)

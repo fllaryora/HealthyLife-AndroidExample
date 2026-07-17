@@ -11,6 +11,7 @@ composeBom = "2025.12.00"
 #new
 objectbox = "5.4.2"
 kotlinx-serialization = "1.6.3"
+coroutines = "1.10.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,7 +38,7 @@ objectbox-testing-windows = {group = "io.objectbox", name = "objectbox-windows",
 objectbox-testing-linux = {group = "io.objectbox", name = "objectbox-linux", version.ref = "objectbox" }
 objectbox-testing-linux-arm64 = {group = "io.objectbox", name = "objectbox-linux-arm64", version.ref = "objectbox" }
 objectbox-testing-linux-armv7 = {group = "io.objectbox", name = "objectbox-linux-armv7", version.ref = "objectbox" }
-
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

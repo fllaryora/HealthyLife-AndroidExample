@@ -6,6 +6,7 @@ import io.objectbox.Box
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import io.objectbox.kotlin.flow
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -18,12 +19,19 @@ object  WeightRepositoryImpl: WeightRepository {
     private lateinit var mWeightDAO: WeightDAO
     private lateinit var mWeightEntityBox: Box<WeightEntity>
 
-    override fun initialize(mWeightDAO: WeightDAO) {
+
+    private lateinit var ioDispatcher: CoroutineDispatcher
+
+    override fun initialize(
+        mWeightDAO: WeightDAO,
+        dispatcher: CoroutineDispatcher
+    ) {
         this.mWeightDAO = mWeightDAO
         this.mWeightEntityBox = mWeightDAO.getBox()
 
     }
 
+    //tested OK
     override suspend fun insert(weightEntity: WeightEntity): Long {
         return withContext(Dispatchers.IO) {
             return@withContext mWeightDAO.insert(weightEntity)
@@ -54,18 +62,21 @@ object  WeightRepositoryImpl: WeightRepository {
         }
     }
 
+    //tested OK
     override suspend fun deleteAll() {
         return withContext(Dispatchers.IO) {
             return@withContext mWeightDAO.deleteAll()
         }
     }
 
+    //tested OK
     override suspend fun delete(timelineable: WeightEntity): Boolean {
         return withContext(Dispatchers.IO) {
             return@withContext mWeightDAO.delete(timelineable)
         }
     }
 
+    // tested OK
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getAll(): Flow<List<WeightEntity>> {
         return  mWeightEntityBox.query().build().flow()

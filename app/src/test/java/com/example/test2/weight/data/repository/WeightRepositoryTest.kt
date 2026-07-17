@@ -3,17 +3,25 @@ package com.example.test2.weight.data.repository
 import com.example.test2.MyObjectBox
 import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.features.weight.data.local.WeightEntity
+import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import kotlin.random.Random
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 
 open class WeightRepositoryTest {
 
@@ -21,15 +29,10 @@ open class WeightRepositoryTest {
     protected val store: BoxStore
         get() = _store!!
 
-    private fun coin(from: Int, until: Int): Int {
-        return Random(System.nanoTime()).nextInt(from = from, until = until)
-    }
 
-    private fun rand(): Float {
-        return Random(System.nanoTime()).nextDouble(70.0, 180.0).toFloat()
-    }
-
-
+    val testScheduler = TestCoroutineScheduler()
+    val testDispatcher = StandardTestDispatcher(testScheduler)
+    val testScope = TestScope(testDispatcher)
 
     @Before
     fun setUp() {
@@ -45,6 +48,7 @@ open class WeightRepositoryTest {
 
         val mWeightEntityBox: Box<WeightEntity> = store.boxFor(WeightEntity::class.java)
         WeightDAOImpl.initialize(mWeightEntityBox)
+        WeightRepositoryImpl.initialize(WeightDAOImpl, testDispatcher)
     }
 
     @After
@@ -54,19 +58,147 @@ open class WeightRepositoryTest {
         BoxStore.deleteAllFiles(TEST_DIRECTORY)
     }
 
-    @Test
-    fun fetchEmptyDataBaseShouldReturnZeroRecords() {
-        // Get a box and use ObjectBox as usual
-        val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
-        val allList : List<WeightEntity> = WeightDAOImpl.getAll()
-        val pair : Pair<List<WeightEntity>, Float?> = WeightDAOImpl.getWeightsAndFirstDay(0L, 20L)
-        Assert.assertEquals(0, list.size)
-        Assert.assertEquals(0, allList.size)
-        Assert.assertEquals(0, pair.first.size)
-        Assert.assertEquals(null, pair.second)
+@OptIn(ExperimentalCoroutinesApi::class)
+@Test
+fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteAll() = testScope.runTest {
+
+    val emissions = mutableListOf<List<WeightEntity>>()
+    val secondEmission = CompletableDeferred<Unit>()
+    val thirdEmission = CompletableDeferred<Unit>()
+
+    val collectorJob = testScope.launch {
+
+        WeightRepositoryImpl
+            .getAll()
+            .collect { list ->
+
+
+                println(
+                    "Emission #${emissions.size + 1} -> size=${list.size}"
+                )
+
+                emissions.add(list)
+
+                when (emissions.size) {
+                    2 -> secondEmission.complete(Unit)
+                    3 -> thirdEmission.complete(Unit)
+                }
+
+                if (emissions.size == 3) {
+                    println("Second emission arrived")
+                    cancel()
+                }
+            }
     }
+    advanceUntilIdle()
+
+    WeightRepositoryImpl.insert(
+        WeightEntity(
+            id = 0L,
+            date = OffsetDateTime.now(),
+            weight = 1.5f
+        )
+    )
+    advanceUntilIdle()
+    secondEmission.await()
+    WeightRepositoryImpl.deleteAll()
+    advanceUntilIdle()
+    thirdEmission.await()
+    collectorJob.join()
+    assertEquals(3, emissions.size)
+
+    assertEquals(
+        0,
+        emissions[0].size
+    )
+
+    assertEquals(
+        1,
+        emissions[1].size
+    )
+
+    assertEquals(
+        1.5f,
+        emissions[1][0].weight
+    )
+
+    assertEquals(
+        0,
+        emissions[2].size
+    )
+}
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun insert_and_delete_should_emit_changes_after_insert_and_emit_after_delete() = testScope.runTest {
+
+        val emissions = mutableListOf<List<WeightEntity>>()
+        val secondEmission = CompletableDeferred<Unit>()
+        val thirdEmission = CompletableDeferred<Unit>()
+
+        val collectorJob = testScope.launch {
+
+            WeightRepositoryImpl
+                .getAll()
+                .collect { list ->
 
 
+                    println(
+                        "Emission #${emissions.size + 1} -> size=${list.size}"
+                    )
+
+                    emissions.add(list)
+
+                    when (emissions.size) {
+                        2 -> secondEmission.complete(Unit)
+                        3 -> thirdEmission.complete(Unit)
+                    }
+
+                    if (emissions.size == 3) {
+                        println("Second emission arrived")
+                        cancel()
+                    }
+                }
+        }
+        advanceUntilIdle()
+        val entity : WeightEntity= WeightEntity(
+            id = 0L,
+            date = OffsetDateTime.now(),
+            weight = 1.5f
+        )
+
+        WeightRepositoryImpl.insert(
+            entity
+        )
+        advanceUntilIdle()
+        secondEmission.await()
+        entity.id = 1L //little hack
+        WeightRepositoryImpl.delete(entity)
+        advanceUntilIdle()
+        thirdEmission.await()
+        collectorJob.join()
+        assertEquals(3, emissions.size)
+
+        assertEquals(
+            0,
+            emissions[0].size
+        )
+
+        assertEquals(
+            1,
+            emissions[1].size
+        )
+
+        assertEquals(
+            1.5f,
+            emissions[1][0].weight
+        )
+
+        assertEquals(
+            0,
+            emissions[2].size
+        )
+    }
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")
     }

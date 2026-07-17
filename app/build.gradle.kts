@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.objectbox.android)
     kapt(libs.objectbox.kotlin)
     testImplementation(libs.objectbox.testing.macos)
+    testImplementation(libs.kotlinx.coroutines.test)
 
 }
 
