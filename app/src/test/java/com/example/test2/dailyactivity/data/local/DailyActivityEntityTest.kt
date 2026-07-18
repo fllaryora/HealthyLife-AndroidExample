@@ -1,9 +1,9 @@
-package com.example.test2.dailyactivity.data
+package com.example.test2.dailyactivity.data.local
 
-import com.example.test2.features.MyObjectBox
-import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
+import com.example.test2.features.MyObjectBox
+import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore

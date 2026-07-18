@@ -27,6 +27,9 @@ import com.example.test2.features.weight.ui.WeightScreen
 import com.example.test2.ui.theme.Test2Theme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
+import com.example.test2.features.numbertwo.ui.NumberTwoScreen
+import com.example.test2.features.numbertwo.ui.viewmodel.NumberTwoViewModel
 import com.example.test2.features.water.data.repository.WaterRepositoryImpl
 import com.example.test2.features.water.ui.WaterScreen
 import com.example.test2.features.water.ui.viewmodel.WaterViewModel
@@ -142,6 +145,9 @@ fun HomeGraph(
             Greeting(
                 onWeight = {
                     navController.navigate("weight")
+                },
+                onNumberTwo = {
+                    navController.navigate("numberTwo")
                 }
             )
         }
@@ -156,6 +162,21 @@ fun HomeGraph(
 
             WeightScreen(viewModel)
         }
+
+        composable("numberTwo") {
+
+            val viewModel: NumberTwoViewModel = viewModel(
+                factory = NumberTwoViewModel.Factory(
+                    NumberTwoRepositoryImpl
+                )
+            )
+
+            NumberTwoScreen(
+                viewModel
+            )
+        }
+
+
     }
 }
 
@@ -206,7 +227,8 @@ fun ProfileGraph(
 
 @Composable
 fun Greeting(
-    onWeight: ()-> Unit
+    onWeight: ()-> Unit,
+    onNumberTwo: ()-> Unit,
 ) {
 
     Column {
@@ -221,6 +243,14 @@ fun Greeting(
             }
         ) {
             Text("Abrir Weight Screen")
+        }
+
+        Button(
+            onClick = {
+                onNumberTwo()
+            }
+        ) {
+            Text("Abrir WC  Screen")
         }
     }
 }

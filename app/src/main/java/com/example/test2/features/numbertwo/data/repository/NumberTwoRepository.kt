@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 
 interface NumberTwoRepository {
-    fun initialize(mWaterDAO: NumberTwoDAO, dispatcher: CoroutineDispatcher) : Unit
+    fun initialize(mNumberTwoDAO: NumberTwoDAO, dispatcher: CoroutineDispatcher) : Unit
 
     /**
      * Persists the supplied entity.

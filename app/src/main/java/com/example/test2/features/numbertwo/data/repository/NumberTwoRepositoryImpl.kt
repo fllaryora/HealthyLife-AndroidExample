@@ -23,11 +23,11 @@ object NumberTwoRepositoryImpl : NumberTwoRepository {
     private lateinit var ioDispatcher: CoroutineDispatcher
 
     override fun initialize(
-        mWaterDAO: NumberTwoDAO,
+        mNumberTwoDAO: NumberTwoDAO,
         dispatcher: CoroutineDispatcher
     ) {
-        this.mNumberTwoDAO = mWaterDAO
-        this.mNumberTwoEntityBox = mWaterDAO.getBox()
+        this.mNumberTwoDAO = mNumberTwoDAO
+        this.mNumberTwoEntityBox = mNumberTwoDAO.getBox()
         ioDispatcher = dispatcher
     }
 

@@ -10,6 +10,7 @@ import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
+import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
 import com.example.test2.features.pill.data.local.PillEntity
 import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import com.example.test2.features.water.data.local.WaterDAOImpl
@@ -44,6 +45,7 @@ class MyDBApplication: Application() {
 
         val mNumberTwoEntityBox: Box<NumberTwoEntity> = ObjectBox.mBoxStore.boxFor(NumberTwoEntity::class.java)
         NumberTwoDAOImpl.initialize(mNumberTwoEntityBox)
+        NumberTwoRepositoryImpl.initialize(NumberTwoDAOImpl, Dispatchers.IO)
 
         val mActivityBox : Box<DailyActivityEntity> = ObjectBox.mBoxStore.boxFor(DailyActivityEntity::class.java)
         ActivityDAOImpl.initialize(mActivityBox)
