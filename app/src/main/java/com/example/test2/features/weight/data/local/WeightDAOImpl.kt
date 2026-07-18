@@ -14,10 +14,6 @@ object WeightDAOImpl : WeightDAO {
         return mWeightEntityBox
     }
 
-    override fun getQuery(): Query<WeightEntity> {
-        return mWeightEntityQuery
-    }
-
     override fun initialize(box: Box<WeightEntity>) {
         mWeightEntityBox = box
         mWeightEntityQuery = mWeightEntityBox.query().order(

@@ -14,6 +14,7 @@ import com.example.test2.features.pill.data.local.PillEntity
 import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import com.example.test2.features.water.data.local.WaterDAOImpl
 import com.example.test2.features.water.data.local.WaterEntity
+import com.example.test2.features.water.data.repository.WaterRepositoryImpl
 import com.example.test2.features.weight.data.local.WeightEntity
 import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
 import com.example.test2.framework.data.database.ObjectBox
@@ -33,6 +34,7 @@ class MyDBApplication: Application() {
 
         val mWaterBox: Box<WaterEntity> = ObjectBox.mBoxStore.boxFor(WaterEntity::class.java)
         WaterDAOImpl.initialize(mWaterBox)
+        WaterRepositoryImpl.initialize(WaterDAOImpl, Dispatchers.IO)
 
         val mPillEntityBox: Box<PillEntity> = ObjectBox.mBoxStore.boxFor(PillEntity::class.java)
         PillDAOImpl.initialize(mPillEntityBox)

@@ -80,5 +80,4 @@ interface WeightDAO : TimelineableDAO<WeightEntity> {
 
     fun getBox(): Box<WeightEntity>
 
-    fun getQuery(): Query<WeightEntity>
 }

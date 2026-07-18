@@ -1,4 +1,4 @@
-package com.example.test2.features.weight.ui
+package com.example.test2.features.water.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,38 +21,36 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import com.example.test2.features.weight.data.local.WeightEntity
-import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
-import com.example.test2.features.weight.ui.viewmodel.WeightViewModel
+import com.example.test2.features.water.data.local.WaterEntity
+import com.example.test2.features.water.data.repository.WaterRepositoryImpl
+import com.example.test2.features.water.ui.viewmodel.WaterViewModel
 import com.example.test2.ui.theme.Test2Theme
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.text.forEach
 
-
-class WeightActivity : ComponentActivity() {
+class WaterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-
         val viewModel = ViewModelProvider(
             this,
-            WeightViewModel.Factory(WeightRepositoryImpl)
-        )[WeightViewModel::class.java]
+            WaterViewModel.Factory(WaterRepositoryImpl)
+        )[WaterViewModel::class.java]
 
         setContent {
             Test2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    WeightScreen(viewModel, modifier = Modifier.padding(innerPadding))
+                    WaterScreen(viewModel, modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -61,12 +59,12 @@ class WeightActivity : ComponentActivity() {
 
 
 @Composable
-fun WeightScreen(
-    viewModel: WeightViewModel,
+fun WaterScreen(
+    viewModel: WaterViewModel,
     modifier: Modifier = Modifier
 ) {
 
-    val weights: List<WeightEntity>  by viewModel.weights.collectAsState()
+    val waters: List<WaterEntity>  by viewModel.waters.collectAsState()
     val loading: Boolean  by viewModel.loading.collectAsState()
 
     if (loading) {
@@ -82,14 +80,14 @@ fun WeightScreen(
 
     Column ( modifier = modifier) {
         FieldWithCow({
-                weight: Float->
-            viewModel.addWeight(weight)
+                volume: Float->
+            viewModel.addWaterIntake(volume)
         })
         JustTheList(
-            weights,
+            waters,
             {
-                    weight: WeightEntity->
-                viewModel.deleteWeight(weight)
+                    water: WaterEntity->
+                viewModel.deleteWater(water)
             }
         )
     }
@@ -98,11 +96,11 @@ fun WeightScreen(
 
 @Composable
 fun FieldWithCow (
-    weightAddPressed: (Float) -> Unit
+    waterAddPressed: (Float) -> Unit
 ) {
 
 
-    var weightText by remember {
+    var waterText by remember {
         mutableStateOf("")
     }
 
@@ -113,7 +111,7 @@ fun FieldWithCow (
 
 
         OutlinedTextField(
-            value = weightText,
+            value = waterText,
             onValueChange = { newValue ->
 
                 val filtered = buildString {
@@ -131,31 +129,31 @@ fun FieldWithCow (
                     }
                 }
 
-                weightText = filtered
+                waterText = filtered
             },
             label = {
-                Text("Weight")
+                Text("Water Intake")
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             )
         )
 
-        val weightValue = weightText
+        val waterValue = waterText
             .replace(',', '.')
             .toFloatOrNull()
 
         Button(
-            enabled = weightValue != null,
+            enabled = waterValue != null,
             onClick = {
 
-                weightValue?.let { value ->
-                        weightAddPressed(value)
-                        weightText = ""
-                    }
+                waterValue?.let { value ->
+                    waterAddPressed(value)
+                    waterText = ""
+                }
             }
         ) {
-            Text("Add")
+            Text("Add Intake")
         }
     }
 
@@ -163,10 +161,10 @@ fun FieldWithCow (
 
 @Composable
 fun JustTheList(
-     weights: List<WeightEntity>,
-     weightDeletePressed: (WeightEntity) -> Unit
+    waters: List<WaterEntity>,
+    waterDeletePressed: (WaterEntity) -> Unit
 ) {
-    if( weights.isEmpty()  ){
+    if( waters.isEmpty()  ){
         Text(
             text = "Empty View",
 
@@ -178,13 +176,13 @@ fun JustTheList(
     Column {
 
         Text(
-            text = "Weights (${weights.size})",
+            text = "Water Intakes (${waters.size})",
             style = MaterialTheme.typography.headlineSmall
         )
 
         LazyColumn {
-            items(weights) { weight : WeightEntity ->
-                JustTheItem(weight, weightDeletePressed)
+            items(waters) { water : WaterEntity ->
+                JustTheItem(water, waterDeletePressed)
             }
         }
     }
@@ -193,8 +191,8 @@ fun JustTheList(
 
 @Composable
 fun JustTheItem(
-    weight: WeightEntity,
-    weightDeletePressed: (WeightEntity) -> Unit
+    water: WaterEntity,
+    waterDeletePressed: (WaterEntity) -> Unit
 ) {
 
     val locale = Locale.getDefault()
@@ -205,23 +203,23 @@ fun JustTheItem(
         else -> "dd-MM-yyyy"
     }
 
-    val formattedDate = weight.date.format(
+    val formattedDate = water.date.format(
         DateTimeFormatter.ofPattern(pattern)
     )
 
-    val formattedWeight = String.format(
+    val formattedVolume = String.format(
         locale,
         "%.2f",
-        weight.weight
+        water.volume
     )
 
     Row{
         Text(
-            text = "$formattedDate - $formattedWeight"
+            text = "$formattedDate - $formattedVolume"
         )
         Button(
             onClick = {
-                weightDeletePressed(weight)
+                waterDeletePressed(water)
             }
         ) {
             Text("Delete")

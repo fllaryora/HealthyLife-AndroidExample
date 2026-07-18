@@ -45,7 +45,7 @@ import java.util.Locale
         @Serializable(with = TimeConverterForKotlinxSerializable::class)
         @Unique
         val date: OffsetDateTime,
-    val volume: Float
+        val volume: Float
     ): Graphable, Timelineable {
 
     /**

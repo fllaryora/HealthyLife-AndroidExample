@@ -30,6 +30,12 @@
             android:label="@string/title_activity_weight"
             android:theme="@style/Theme.Test2"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".features.water.ui.WaterActivity"
+            android:exported="false"
+            android:label="@string/title_activity_water"
+            android:theme="@style/Theme.Test2"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
