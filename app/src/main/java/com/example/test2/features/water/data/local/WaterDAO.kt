@@ -7,7 +7,7 @@ import io.objectbox.Box
 import java.time.OffsetDateTime
 
 /**
- * Data Access Object (DAO) responsible for managing [Water] intake records.
+ * Data Access Object (DAO) responsible for managing [WaterEntity] intake records.
  *
  * Extends [TimelineableDAO] to provide timeline-related operations
  * and adds water-specific persistence and query methods.

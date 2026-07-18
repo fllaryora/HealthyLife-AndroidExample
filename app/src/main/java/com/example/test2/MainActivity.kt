@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -133,7 +134,8 @@ fun HomeGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "home",
+        modifier = Modifier.safeDrawingPadding()
     ) {
 
         composable("home") {
@@ -164,7 +166,8 @@ fun FavoritesGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "favorites"
+        startDestination = "favorites",
+        modifier = Modifier.safeDrawingPadding()
     ) {
 
         composable("favorites") {
@@ -185,7 +188,8 @@ fun ProfileGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "profile"
+        startDestination = "profile",
+        modifier = Modifier.safeDrawingPadding()
     ) {
 
         composable("profile") {

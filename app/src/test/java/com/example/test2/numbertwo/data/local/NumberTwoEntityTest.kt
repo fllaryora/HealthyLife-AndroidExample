@@ -1,4 +1,4 @@
-package com.example.test2.numbertwo.data
+package com.example.test2.numbertwo.data.local
 
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl

@@ -6,12 +6,12 @@ import io.objectbox.exception.UniqueViolationException
 import io.objectbox.query.Query
 import io.objectbox.query.QueryBuilder
 
-object NumberTwoDAOImpl : TodoLineableDAO<NumberTwoEntity> {
+object NumberTwoDAOImpl : NumberTwoDAO {
 
     private lateinit var mNumberTwoEntityBox: Box<NumberTwoEntity>
     private lateinit var mNumberTwoEntityQuery: Query<NumberTwoEntity>
 
-    fun initialize(box: Box<NumberTwoEntity>) {
+    override fun initialize(box: Box<NumberTwoEntity>) {
         mNumberTwoEntityBox = box
         mNumberTwoEntityQuery = mNumberTwoEntityBox.query()
         .order(
@@ -20,7 +20,7 @@ object NumberTwoDAOImpl : TodoLineableDAO<NumberTwoEntity> {
 
     }
 
-    fun insert(numberTwoEntity: NumberTwoEntity) : Long {
+    override fun insert(numberTwoEntity: NumberTwoEntity) : Long {
         //return the new key
         try {
             return mNumberTwoEntityBox.put(numberTwoEntity)
@@ -28,6 +28,10 @@ object NumberTwoDAOImpl : TodoLineableDAO<NumberTwoEntity> {
             // A User with that name already exists.
             throw Exception(e.message)
         }
+    }
+
+    override fun getBox(): Box<NumberTwoEntity> {
+        return mNumberTwoEntityBox
     }
 
     /**
@@ -38,16 +42,16 @@ object NumberTwoDAOImpl : TodoLineableDAO<NumberTwoEntity> {
         return mNumberTwoEntityBox.remove(todoLineable)
     }
 
-    fun getNumberTwoList( offset: Long, limit: Long): List<NumberTwoEntity> {
+    override fun getNumberTwoList( offset: Long, limit: Long): List<NumberTwoEntity> {
         return mNumberTwoEntityQuery.find(offset,limit)
             .sortedBy { numberTwoEntity: NumberTwoEntity -> numberTwoEntity.date } //ascending
     }
 
-    fun deleteAll(){
+    override fun deleteAll(){
         return mNumberTwoEntityBox.removeAll()
     }
 
-    fun getAll() : List<NumberTwoEntity> {
+    override fun getAll() : List<NumberTwoEntity> {
         return mNumberTwoEntityBox.query().build().find()
     }
 }
