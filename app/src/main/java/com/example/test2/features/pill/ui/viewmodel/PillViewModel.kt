@@ -23,10 +23,10 @@ class PillViewModel(
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
     init {
-        loadWeights()
+        loadPills()
     }
 
-    private fun loadWeights() {
+    private fun loadPills() {
         viewModelScope.launch {
             repository.getPills()
                 .collect { pillList ->

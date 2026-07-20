@@ -117,7 +117,7 @@ fun JustTheList(
     Column {
 
         Text(
-            text = "Weights (${pills.size})",
+            text = "Pills (${pills.size})",
             style = MaterialTheme.typography.headlineSmall
         )
 

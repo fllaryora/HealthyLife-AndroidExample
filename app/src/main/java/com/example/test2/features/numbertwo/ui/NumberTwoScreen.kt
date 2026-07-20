@@ -95,7 +95,7 @@ fun JustTheList(
     Column {
 
         Text(
-            text = "Water Intakes (${waters.size})",
+            text = "Number two visits (${waters.size})",
             style = MaterialTheme.typography.headlineSmall
         )
 

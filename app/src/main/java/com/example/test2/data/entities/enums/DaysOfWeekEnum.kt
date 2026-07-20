@@ -50,9 +50,11 @@ enum class DaysOfWeekEnum (val value: Int) {
          */
         @JvmStatic
         fun getFirstDay(today: DayOfWeek, daysOfWeek: Int): DayOfWeek {
+
             //days in setted days
             val days : List<DaysOfWeekEnum> = DaysOfWeekEnum.values().filter {
-                    value -> value.applyOn(daysOfWeek) }
+                    value -> value.applyOn(daysOfWeek)
+            }
             //for each day of the week starting from today
             for(eachDay in fromDayOfWeek(today).getList()) {
                 if(days.contains(eachDay)){
@@ -190,6 +192,14 @@ enum class DaysOfWeekEnum (val value: Int) {
         }
     }
 
-
-
 }
+
+
+fun Set<DaysOfWeekEnum>.toMask(): Int =
+    sumOf { it.value }
+
+fun fromMask(mask: Int): Set<DaysOfWeekEnum> =
+    DaysOfWeekEnum.values()
+        .filter { it != DaysOfWeekEnum.ALL }
+        .filter { it.applyOn(mask) }
+        .toSet()

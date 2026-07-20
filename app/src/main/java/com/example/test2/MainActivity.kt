@@ -26,6 +26,9 @@ import com.example.test2.features.weight.ui.WeightScreen
 import com.example.test2.ui.theme.Test2Theme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.test2.features.dailyactivity.data.repository.ActivityRepositoryImpl
+import com.example.test2.features.dailyactivity.ui.ActivityScreen
+import com.example.test2.features.dailyactivity.ui.viewmodel.ActivityViewModel
 import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
 import com.example.test2.features.numbertwo.ui.NumberTwoScreen
 import com.example.test2.features.numbertwo.ui.viewmodel.NumberTwoViewModel
@@ -153,7 +156,10 @@ fun HomeGraph(
                 },
                 onPill = {
                     navController.navigate("pill")
-                }
+                },
+                onActivity = {
+                    navController.navigate("activity")
+                },
             )
         }
 
@@ -190,6 +196,18 @@ fun HomeGraph(
             )
             PillScreen(viewModel)
         }
+
+        composable("activity") {
+
+            val viewModel: ActivityViewModel = viewModel(
+                factory = ActivityViewModel.Factory(
+                    ActivityRepositoryImpl
+                )
+            )
+            ActivityScreen(viewModel)
+        }
+
+
 
     }
 }
@@ -244,6 +262,7 @@ fun Greeting(
     onWeight: ()-> Unit,
     onNumberTwo: ()-> Unit,
     onPill: ()-> Unit,
+    onActivity: ()-> Unit,
 ) {
 
     Column {
@@ -267,12 +286,21 @@ fun Greeting(
         ) {
             Text("Abrir WC  Screen")
         }
+
         Button(
             onClick = {
                 onPill()
             }
         ) {
             Text("Abrir  Pill  Screen")
+        }
+
+        Button(
+            onClick = {
+                onActivity()
+            }
+        ) {
+            Text("Abrir  Activity  Screen")
         }
     }
 }

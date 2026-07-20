@@ -26,16 +26,7 @@ object FlatActivities {
                             thisActivity.copy(daysOfWeek = dayIterator.value) }
                 }
     }
-    /* EQUIVALENT CODE
-        val flattenedList:MutableList<DailyActivityEntity> = mutableListOf()
-     for(dayIterator:DaysOfWeekEnum in currentDayOfWeek.getList()) {
-         for(thisActivity:DailyActivityEntity in activityList) {
-             if(dayIterator.applyOn(thisActivity.daysOfWeek)) {
-                 flattenedList.add(thisActivity.copy(daysOfWeek = dayIterator.value))
-             }
-         }
-     }
-     return flattenedList*/
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun flatActivitiesFlow(
         activitiesFlow: Flow<List<DailyActivityEntity>>,

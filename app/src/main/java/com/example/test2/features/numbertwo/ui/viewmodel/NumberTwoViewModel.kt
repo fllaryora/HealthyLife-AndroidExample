@@ -24,10 +24,10 @@ class NumberTwoViewModel(
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
     init {
-        loadWeights()
+        loadNumberTwoVisits()
     }
 
-    private fun loadWeights() {
+    private fun loadNumberTwoVisits() {
         viewModelScope.launch {
             repository.getAll()
                 .collect { wcList ->

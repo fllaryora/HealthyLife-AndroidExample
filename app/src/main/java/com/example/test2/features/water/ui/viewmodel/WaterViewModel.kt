@@ -24,10 +24,10 @@ class WaterViewModel(
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
     init {
-        loadWeights()
+        loadWaters()
     }
 
-    private fun loadWeights() {
+    private fun loadWaters() {
         viewModelScope.launch {
             repository.getAll()
                 .collect { waterList ->
