@@ -3,7 +3,9 @@ package com.example.test2.framework.data.database.di
 import android.app.Application
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
+import com.example.test2.features.dailyactivity.data.repository.ActivityRepositoryImpl
 import com.example.test2.features.dailyactivity.domain.ActivityUseCaseImpl
+import com.example.test2.features.dailyactivity.domain.repository.ActivityUseCaseRepositoryImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
@@ -46,6 +48,8 @@ fun objectBoxInitialization(app : Application) {
     val mActivityBox : Box<DailyActivityEntity> = ObjectBox.mBoxStore.boxFor(DailyActivityEntity::class.java)
     ActivityDAOImpl.initialize(mActivityBox)
     ActivityUseCaseImpl.initialize(ActivityDAOImpl)
+    ActivityRepositoryImpl.initialize(ActivityDAOImpl, Dispatchers.IO)
+    ActivityUseCaseRepositoryImpl.initialize(ActivityRepositoryImpl, Dispatchers.IO)
 
 
     val mPillTakenEntityBox: Box<PillTakenEntity> = ObjectBox.mBoxStore.boxFor(PillTakenEntity::class.java)
