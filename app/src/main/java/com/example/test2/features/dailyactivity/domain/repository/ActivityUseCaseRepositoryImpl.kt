@@ -56,6 +56,9 @@ object ActivityUseCaseRepositoryImpl : ActivityUseCaseRepository {
     }
 
 
+    /*
+    Environment must give the current time in order to be testeable
+    * */
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getNextActivityFromList(
         currentHour: Int,
