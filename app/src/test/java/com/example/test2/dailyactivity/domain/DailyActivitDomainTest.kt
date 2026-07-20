@@ -1,21 +1,22 @@
-package com.example.test2.dailyactivity.data.local
+package com.example.test2.dailyactivity.domain
 
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
+import com.example.test2.features.dailyactivity.domain.ActivityUseCaseImpl
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.time.OffsetDateTime
 import kotlin.random.Random
 
-open class DailyActivityEntityTest {
+open class DailyActivitDomainTest {
 
     private var _store: BoxStore? = null
     protected val store: BoxStore
@@ -39,6 +40,7 @@ open class DailyActivityEntityTest {
 
         val mPillBox: Box<DailyActivityEntity> = store.boxFor(DailyActivityEntity::class.java)
         ActivityDAOImpl.initialize(mPillBox)
+        ActivityUseCaseImpl.initialize(ActivityDAOImpl)
     }
 
     @After
@@ -48,11 +50,6 @@ open class DailyActivityEntityTest {
         BoxStore.deleteAllFiles(TEST_DIRECTORY)
     }
 
-    @Test
-    fun fetchEmptyDataBaseShouldReturnZeroRecords() {
-        val allList : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
-        Assert.assertEquals(0, allList.size)
-    }
 
     @Test
     fun insetWeightsAndGetTheData() {
@@ -87,14 +84,16 @@ open class DailyActivityEntityTest {
             ActivityDAOImpl.insert(it)
         }
 
-        val allList : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
-        Assert.assertEquals(6, allList.size)
+        val nextAct = ActivityUseCaseImpl.getNextActivity(17,55, DaysOfWeekEnum.WEDNESDAY)
+        assert(nextAct != null)
+        assert("Actividad fisica" == nextAct!!.name)
+        val nextAct2 = ActivityUseCaseImpl.getNextActivity(17,55, DaysOfWeekEnum.SUNDAY)
+        assert(nextAct2 != null)
+        assert("Cenar" == nextAct2!!.name)
+        val nextAct3 = ActivityUseCaseImpl.getNextActivity(17,55, DaysOfWeekEnum.THURSDAY)
+        assert(nextAct3 != null)
+        assert("Desayunar" == nextAct3!!.name)
 
-    }
-
-    @Test
-    fun deleteAllEmptyTableShouldNotThrowException() {
-        ActivityDAOImpl.deleteAll()
     }
 
     @Test
@@ -127,20 +126,14 @@ open class DailyActivityEntityTest {
             ),
         )
 
+        val current: OffsetDateTime = OffsetDateTime.now()
+        val currentDayOfWeek: DaysOfWeekEnum = DaysOfWeekEnum.fromDayOfWeek(current.dayOfWeek)
         daylyActivities.forEach {
             ActivityDAOImpl.insert(it)
         }
-
-        var allList = ActivityDAOImpl.getActivities()
-        val touch : Int  = coin(0, allList.size-1)
-        allList.forEachIndexed { index, weight : DailyActivityEntity ->
-            if( index != touch){
-                ActivityDAOImpl.delete(weight)
-            }
-        }
-
-        allList  = ActivityDAOImpl.getActivities()
-        Assert.assertEquals(1, allList.size)
+        val nextAct = ActivityUseCaseImpl.getNextActivity(17,55, currentDayOfWeek)
+        assert(nextAct != null)
+        assert("Actividad fisica" == nextAct!!.name)
 
     }
 

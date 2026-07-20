@@ -4,18 +4,22 @@ import io.objectbox.Box
 import io.objectbox.exception.UniqueViolationException
 import io.objectbox.query.Query
 
-object PillDAOImpl {
+object PillDAOImpl: PillDAO {
 
     private lateinit var mPillEntityBox: Box<PillEntity>
     private lateinit var mPillEntityQuery: Query<PillEntity>
 
-    fun initialize(box: Box<PillEntity>) {
+    override fun getBox() : Box<PillEntity> {
+        return mPillEntityBox
+    }
+
+    override fun initialize(box: Box<PillEntity>) {
         mPillEntityBox = box
         mPillEntityQuery = mPillEntityBox.query().build()
     }
 
 
-    fun insert(pillEntity: PillEntity) : Long {
+    override fun insert(pillEntity: PillEntity) : Long {
         //return the new key
         try {
             return mPillEntityBox.put(pillEntity)
@@ -29,15 +33,15 @@ object PillDAOImpl {
      * Removes (deletes) the given Object.
      * @return true if an entity was actually removed (false if no entity exists with the given ID)
      */
-    fun delete(pillEntity: PillEntity) : Boolean {
+    override fun delete(pillEntity: PillEntity) : Boolean {
         return mPillEntityBox.remove(pillEntity)
     }
 
-    fun getPills(): List<PillEntity> {
+    override fun getPills(): List<PillEntity> {
         return mPillEntityQuery.find()
     }
 
-    fun deleteAll(){
+    override fun deleteAll(){
         return mPillEntityBox.removeAll()
     }
 }

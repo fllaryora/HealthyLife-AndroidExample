@@ -75,20 +75,6 @@ object  WeightRepositoryImpl: WeightRepository {
                 )
             }
             .flowOn(ioDispatcher)
-        /* A thing like this is also possible:
-
- return invalidations
-            .onStart { emit(Unit) }
-            .flatMapLatest {
-            flow {
-                emit(
-                    mWeightDAO.getWeights(offset, limit)
-                )
-            }
-        }.flowOn(ioDispatcher)
-
-
-        * */
 
 
 

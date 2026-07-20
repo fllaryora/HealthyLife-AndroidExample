@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,6 +29,9 @@ import androidx.navigation.compose.composable
 import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
 import com.example.test2.features.numbertwo.ui.NumberTwoScreen
 import com.example.test2.features.numbertwo.ui.viewmodel.NumberTwoViewModel
+import com.example.test2.features.pill.data.repository.PillRepositoryImpl
+import com.example.test2.features.pill.ui.PillScreen
+import com.example.test2.features.pill.ui.viewmodel.PillViewModel
 import com.example.test2.features.water.data.repository.WaterRepositoryImpl
 import com.example.test2.features.water.ui.WaterScreen
 import com.example.test2.features.water.ui.viewmodel.WaterViewModel
@@ -148,6 +150,9 @@ fun HomeGraph(
                 },
                 onNumberTwo = {
                     navController.navigate("numberTwo")
+                },
+                onPill = {
+                    navController.navigate("pill")
                 }
             )
         }
@@ -176,6 +181,15 @@ fun HomeGraph(
             )
         }
 
+        composable("pill") {
+
+            val viewModel: PillViewModel = viewModel(
+                factory = PillViewModel.Factory(
+                    PillRepositoryImpl
+                )
+            )
+            PillScreen(viewModel)
+        }
 
     }
 }
@@ -229,6 +243,7 @@ fun ProfileGraph(
 fun Greeting(
     onWeight: ()-> Unit,
     onNumberTwo: ()-> Unit,
+    onPill: ()-> Unit,
 ) {
 
     Column {
@@ -251,6 +266,13 @@ fun Greeting(
             }
         ) {
             Text("Abrir WC  Screen")
+        }
+        Button(
+            onClick = {
+                onPill()
+            }
+        ) {
+            Text("Abrir  Pill  Screen")
         }
     }
 }
