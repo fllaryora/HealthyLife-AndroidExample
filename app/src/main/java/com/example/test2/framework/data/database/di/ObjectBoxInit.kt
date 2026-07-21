@@ -16,6 +16,7 @@ import com.example.test2.features.recordactivity.data.local.ActivityTakenDAOImpl
 import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
 import com.example.test2.features.recordpill.data.local.PillTakenDAOImpl
 import com.example.test2.features.recordpill.data.local.PillTakenEntity
+import com.example.test2.features.recordpill.data.repository.PillTakenRepositoryImpl
 import com.example.test2.features.water.data.local.WaterDAOImpl
 import com.example.test2.features.water.data.local.WaterEntity
 import com.example.test2.features.water.data.repository.WaterRepositoryImpl
@@ -54,6 +55,7 @@ fun objectBoxInitialization(app : Application) {
 
     val mPillTakenEntityBox: Box<PillTakenEntity> = ObjectBox.mBoxStore.boxFor(PillTakenEntity::class.java)
     PillTakenDAOImpl.initialize(mPillTakenEntityBox)
+    PillTakenRepositoryImpl.initialize(PillTakenDAOImpl,  Dispatchers.IO)
 
     val mActivityTakenEntityBox: Box<ActivityTakenEntity>  = ObjectBox.mBoxStore.boxFor(ActivityTakenEntity::class.java)
     ActivityTakenDAOImpl.initialize(mActivityTakenEntityBox)

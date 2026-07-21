@@ -88,4 +88,12 @@ data class PillTakenEntity (
      */
 
     override fun isTakenT() = isTaken
+    companion object{
+        fun create(pillEntityAsociated: PillEntity, id: Long = 0L, date: OffsetDateTime = OffsetDateTime.now(), isTaken: Boolean = true):PillTakenEntity {
+            return PillTakenEntity (id = id, date= date, isTaken = isTaken).apply {
+                pillEntity.target = pillEntityAsociated
+            }
+        }
+    }
 }
+

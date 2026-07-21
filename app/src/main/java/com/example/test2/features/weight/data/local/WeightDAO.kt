@@ -2,7 +2,6 @@ package com.example.test2.features.weight.data.local
 
 import com.example.test2.data.dao.behaviors.TimelineableDAO
 import io.objectbox.Box
-import io.objectbox.query.Query
 
 
 /**
@@ -79,5 +78,6 @@ interface WeightDAO : TimelineableDAO<WeightEntity> {
     fun getAll() : List<WeightEntity>
 
     fun getBox(): Box<WeightEntity>
+
 
 }

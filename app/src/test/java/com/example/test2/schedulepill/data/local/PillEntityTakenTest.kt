@@ -1,10 +1,10 @@
-package com.example.test2.schedulepill.data
+package com.example.test2.schedulepill.data.local
 
-import com.example.test2.features.MyObjectBox
 import com.example.test2.data.converter.TimeConverter
+import com.example.test2.features.MyObjectBox
 import com.example.test2.features.pill.data.local.PillDAOImpl
-import com.example.test2.features.recordpill.data.local.PillTakenDAOImpl
 import com.example.test2.features.pill.data.local.PillEntity
+import com.example.test2.features.recordpill.data.local.PillTakenDAOImpl
 import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
@@ -93,8 +93,8 @@ open class PillEntityTakenTest {
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
         for(i  in 1..36) {
             pillEntityList.forEach {
-                val pillTakenEntity : PillTakenEntity = PillTakenEntity(0L, someDayAtTheMorning)
-                pillTakenEntity.pillEntity.target = it
+                val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = it, date = someDayAtTheMorning, )
+
                 PillTakenDAOImpl.insert(
                     pillTakenEntity
                 )
@@ -138,8 +138,8 @@ open class PillEntityTakenTest {
         var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
         for(i  in 1..36) {
             pillEntityList.forEach {
-                val pillTakenEntity : PillTakenEntity = PillTakenEntity(0L, someDayAtTheMorning)
-                pillTakenEntity.pillEntity.target = it
+                val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = it, date = someDayAtTheMorning, )
+
                 PillTakenDAOImpl.insert(
                     pillTakenEntity
                 )

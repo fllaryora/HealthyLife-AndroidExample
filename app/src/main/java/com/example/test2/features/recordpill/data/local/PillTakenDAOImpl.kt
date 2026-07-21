@@ -11,11 +11,15 @@ import io.objectbox.query.QueryBuilder
  * This class is absolutely Framework dependent.
  * DAO for objectbox
  */
-object PillTakenDAOImpl : TodoLineableDAO<PillTakenEntity> {
+object PillTakenDAOImpl : PillTakenDAO {
     private lateinit var mPillTakenEntityBox: Box<PillTakenEntity>
 
-    fun initialize(box: Box<PillTakenEntity>) {
+    override fun initialize(box: Box<PillTakenEntity>) {
         mPillTakenEntityBox = box
+    }
+
+    override fun getBox() : Box<PillTakenEntity>{
+        return mPillTakenEntityBox
     }
 
     private fun getPillTakenQuery(pillEntity: PillEntity): Query<PillTakenEntity> {
@@ -27,7 +31,26 @@ object PillTakenDAOImpl : TodoLineableDAO<PillTakenEntity> {
     }
 
 
-    fun insert(pillTakenEntity: PillTakenEntity) : Long {
+    override fun insert(pillTakenEntity: PillTakenEntity) : Long {
+
+        check(pillTakenEntity.pillEntity.targetId != 0L) {
+            """
+        PillTakenEntity.pillEntity relation is missing.
+
+        exportPillId=${pillTakenEntity.exportPillId}
+        targetId=${pillTakenEntity.pillEntity.targetId}
+
+        Setting exportPillId does NOT initialize the ObjectBox relation.
+        Use:
+
+        pillTakenEntity.pillEntity.target = pillEntity
+
+        or
+
+        pillTakenEntity.pillEntity.targetId = pillEntity.id
+        """.trimIndent()
+        }
+
         //return the new key
         return mPillTakenEntityBox.put(pillTakenEntity)
     }
@@ -37,34 +60,58 @@ object PillTakenDAOImpl : TodoLineableDAO<PillTakenEntity> {
      * @return true if an entity was actually removed (false if no entity exists with the given ID)
      */
     override fun delete(todoLineable: PillTakenEntity) : Boolean {
+
+        check(todoLineable.pillEntity.targetId != 0L) {
+            """
+        PillTakenEntity.pillEntity relation is missing.
+
+        exportPillId=${todoLineable.exportPillId}
+        targetId=${todoLineable.pillEntity.targetId}
+
+        Setting exportPillId does NOT initialize the ObjectBox relation.
+        Use:
+
+        pillTakenEntity.pillEntity.target = pillEntity
+
+        or
+
+        pillTakenEntity.pillEntity.targetId = pillEntity.id
+        """.trimIndent()
+        }
+
         return mPillTakenEntityBox.remove(todoLineable)
     }
 
-    fun deleteByPill(pillEntity: PillEntity) {
+    override fun deleteByPill(pillEntity: PillEntity) {
         val list: List<PillTakenEntity> = getPillTakenQuery(pillEntity).find()
-        mPillTakenEntityBox.remove(list)
+        if(list.isNotEmpty()) {
+            mPillTakenEntityBox.remove(list)
+        } else {
+            println("The list is empty ${list}")
+        }
+
     }
 
-    fun getPillTaken(pillEntity: PillEntity, offset: Long, limit: Long): Pair<List<PillTakenEntity>, Float?> {
+    override fun getPillTaken(pillEntity: PillEntity, offset: Long, limit: Long): Pair<List<PillTakenEntity>, Float?> {
         val list: List<PillTakenEntity> = getPillTakenList(pillEntity,offset,limit)
         val firstTake: Float? = TimeConverter.convertISOToHours(list.firstOrNull()?.getTime())
         return Pair(list, firstTake)
     }
 
-    fun getPillTakenList(pillEntity: PillEntity, offset: Long, limit: Long): List<PillTakenEntity> {
+    override fun getPillTakenList(pillEntity: PillEntity, offset: Long, limit: Long): List<PillTakenEntity> {
         val list: List<PillTakenEntity> = getPillTakenQuery(pillEntity).find(offset,limit)
         return list.sortedBy { pillTakenEntity: PillTakenEntity -> pillTakenEntity.date } //ascending
     }
 
-    fun deleteAll() {
+    override fun deleteAll() {
         return mPillTakenEntityBox.removeAll()
     }
 
-    fun getAllByPill(pillEntity: PillEntity): List<PillTakenEntity> {
+    override fun getAllByPill(pillEntity: PillEntity): List<PillTakenEntity> {
         return getPillTakenQuery(pillEntity).find()
     }
 
-    fun getAll(): List<PillTakenEntity> {
+    override fun getAll(): List<PillTakenEntity> {
         return mPillTakenEntityBox.query().build().find()
     }
 }
