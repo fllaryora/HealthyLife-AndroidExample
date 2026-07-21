@@ -1,7 +1,6 @@
 package com.example.test2.dailyactivity.data.repository
 
 import com.example.test2.features.MyObjectBox
-import com.example.test2.data.converter.TimeConverter
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
@@ -21,7 +20,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.io.File
-import java.time.OffsetDateTime
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope

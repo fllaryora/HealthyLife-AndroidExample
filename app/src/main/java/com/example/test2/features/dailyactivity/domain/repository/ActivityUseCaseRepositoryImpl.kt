@@ -22,12 +22,14 @@ object ActivityUseCaseRepositoryImpl : ActivityUseCaseRepository {
      */
     private lateinit var mActivityRepository: ActivityRepository
     private lateinit var ioDispatcher: CoroutineDispatcher
+    private var isInit: Boolean = false
     override fun initialize(
         activityRepository: ActivityRepository,
         dispatcher: CoroutineDispatcher
     ) {
         ioDispatcher = dispatcher
         mActivityRepository = activityRepository
+        isInit = true
     }
 
     /**
@@ -46,13 +48,20 @@ object ActivityUseCaseRepositoryImpl : ActivityUseCaseRepository {
         currentDayOfWeek: DaysOfWeekEnum
     ): Flow<DailyActivityEntity?> {
 
-        val activityListFlow:Flow<List<DailyActivityEntity>> =
-            FlatActivities.flatActivitiesFlow(
-                mActivityRepository.getActivities(),
-                currentDayOfWeek, ioDispatcher )
+        if(isInit) {
+            val activityListFlow: Flow<List<DailyActivityEntity>> =
+                FlatActivities.flatActivitiesFlow(
+                    mActivityRepository.getActivities(),
+                    currentDayOfWeek, ioDispatcher
+                )
 
-        return getNextActivityFromList( currentHour, currentMinute, currentDayOfWeek,
-            activityListFlow )
+            return getNextActivityFromList(
+                currentHour, currentMinute, currentDayOfWeek,
+                activityListFlow
+            )
+        } else {
+            throw Exception("ActivityUseCaseRepositoryImpl Not init getNextActivity")
+        }
     }
 
 
@@ -66,6 +75,7 @@ object ActivityUseCaseRepositoryImpl : ActivityUseCaseRepository {
         currentDayOfWeek: DaysOfWeekEnum,
         activityListFlow: Flow<List<DailyActivityEntity>>
     ): Flow<DailyActivityEntity?> {
+        if(isInit) {
         return activityListFlow
             .mapLatest { activityList: List<DailyActivityEntity> ->
                 when {
@@ -97,6 +107,9 @@ object ActivityUseCaseRepositoryImpl : ActivityUseCaseRepository {
                 }
             }
             .flowOn(ioDispatcher)
+        } else {
+            throw Exception("ActivityUseCaseRepositoryImpl Not init getNextActivityFromList")
+        }
     }
 
 

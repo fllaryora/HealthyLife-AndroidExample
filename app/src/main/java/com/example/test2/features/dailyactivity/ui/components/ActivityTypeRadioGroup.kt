@@ -1,4 +1,4 @@
-package com.example.test2.features.dailyactivity.ui
+package com.example.test2.features.dailyactivity.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

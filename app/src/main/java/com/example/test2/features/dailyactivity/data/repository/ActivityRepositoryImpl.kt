@@ -1,6 +1,5 @@
 package com.example.test2.features.dailyactivity.data.repository
 
-import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.features.dailyactivity.data.local.ActivityDAO
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity_
@@ -28,6 +27,8 @@ object ActivityRepositoryImpl : ActivityRepository {
     private lateinit var mDailyActivityBox: Box<DailyActivityEntity>
 
     private lateinit var ioDispatcher: CoroutineDispatcher
+    private var isInit: Boolean = false
+
     override fun initialize(
         activityDAO: ActivityDAO,
         dispatcher: CoroutineDispatcher
@@ -35,6 +36,7 @@ object ActivityRepositoryImpl : ActivityRepository {
         ioDispatcher = dispatcher
         mActivityDAO = activityDAO
         mDailyActivityBox = mActivityDAO.getBox()
+        isInit = true
     }
 
     /**
@@ -45,10 +47,14 @@ object ActivityRepositoryImpl : ActivityRepository {
      * @throws Exception If a unique constraint violation occurs.
      */
     override suspend fun insert(newActivity: DailyActivityEntity): Long {
+        if(isInit) {
         return withContext(ioDispatcher) {
             val returnedValue = mActivityDAO.insert(newActivity)
             invalidations.emit(Unit)
             return@withContext returnedValue
+        }
+        } else {
+            throw Exception("ActivityRepositoryImpl Not init insert")
         }
     }
 
@@ -60,10 +66,14 @@ object ActivityRepositoryImpl : ActivityRepository {
      * false if no matching entity was found.
      */
     override suspend fun delete(activity: DailyActivityEntity): Boolean {
+        if(isInit) {
         return withContext(ioDispatcher) {
             val returnedValue = mActivityDAO.delete(activity)
             invalidations.emit(Unit)
             return@withContext returnedValue
+        }
+        } else {
+            throw Exception("ActivityRepositoryImpl Not init delete")
         }
     }
 
@@ -77,6 +87,7 @@ object ActivityRepositoryImpl : ActivityRepository {
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getActivities(): Flow<List<DailyActivityEntity>> {
+        if(isInit) {
         return mDailyActivityBox.query()
             .order(DailyActivityEntity_.hour)
             .order(DailyActivityEntity_.minute)
@@ -84,16 +95,23 @@ object ActivityRepositoryImpl : ActivityRepository {
             .flow()
             .map { it.toList<DailyActivityEntity>() }
             .flowOn(ioDispatcher)
+        } else {
+            throw Exception("ActivityRepositoryImpl Not init getActivities")
+        }
     }
 
     /**
      * Removes all activities from the database.
      */
     override suspend fun deleteAll() {
+        if(isInit) {
         return withContext(ioDispatcher) {
             val returnedValue = mActivityDAO.deleteAll()
             invalidations.emit(Unit)
             return@withContext returnedValue
+        }
+        } else {
+            throw Exception("ActivityRepositoryImpl Not init deleteAll")
         }
     }
 }

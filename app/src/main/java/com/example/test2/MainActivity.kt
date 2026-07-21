@@ -147,7 +147,7 @@ fun HomeGraph(
     ) {
 
         composable("home") {
-            Greeting(
+            HomeScreen(
                 onWeight = {
                     navController.navigate("weight")
                 },
@@ -258,7 +258,7 @@ fun ProfileGraph(
 }
 
 @Composable
-fun Greeting(
+fun HomeScreen(
     onWeight: ()-> Unit,
     onNumberTwo: ()-> Unit,
     onPill: ()-> Unit,
