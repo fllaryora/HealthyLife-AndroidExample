@@ -29,6 +29,7 @@ import com.example.test2.features.pill.ui.viewmodel.PillViewModel
 @Composable
 fun PillScreen(
     viewModel: PillViewModel,
+    pillTakenAddPressed: (PillEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -56,6 +57,10 @@ fun PillScreen(
             {
                     pill: PillEntity->
                 viewModel.deletePill(pill)
+            },
+            {
+                    pill: PillEntity->
+                pillTakenAddPressed(pill)
             }
         )
     }
@@ -103,7 +108,8 @@ fun FieldWithCow (
 @Composable
 fun JustTheList(
     pills: List<PillEntity>,
-    pillDeletePressed: (PillEntity) -> Unit
+    pillDeletePressed: (PillEntity) -> Unit,
+    pillTakenAddPressed: (PillEntity) -> Unit,
 ) {
     if( pills.isEmpty()  ){
         Text(
@@ -123,7 +129,7 @@ fun JustTheList(
 
         LazyColumn {
             items(pills) { pill : PillEntity ->
-                JustTheItem(pill, pillDeletePressed)
+                JustTheItem(pill, pillDeletePressed, pillTakenAddPressed)
             }
         }
     }
@@ -133,7 +139,8 @@ fun JustTheList(
 @Composable
 fun JustTheItem(
     pill: PillEntity,
-    pillDeletePressed: (PillEntity) -> Unit
+    pillDeletePressed: (PillEntity) -> Unit,
+    pillTakenAddPressed: (PillEntity) -> Unit,
 ) {
 
     Row{
@@ -146,6 +153,13 @@ fun JustTheItem(
             }
         ) {
             Text("Delete")
+        }
+        Button(
+            onClick = {
+                pillTakenAddPressed(pill)
+            }
+        ) {
+            Text("Add PILL INTAKE")
         }
     }
 }

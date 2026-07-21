@@ -21,20 +21,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import com.example.test2.features.weight.ui.WeightScreen
 import com.example.test2.ui.theme.Test2Theme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.test2.features.dailyactivity.data.repository.ActivityRepositoryImpl
 import com.example.test2.features.dailyactivity.ui.ActivityScreen
 import com.example.test2.features.dailyactivity.ui.viewmodel.ActivityViewModel
 import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
 import com.example.test2.features.numbertwo.ui.NumberTwoScreen
 import com.example.test2.features.numbertwo.ui.viewmodel.NumberTwoViewModel
+import com.example.test2.features.pill.data.local.PillEntity
 import com.example.test2.features.pill.data.repository.PillRepositoryImpl
 import com.example.test2.features.pill.ui.PillScreen
 import com.example.test2.features.pill.ui.viewmodel.PillViewModel
+import com.example.test2.features.recordpill.data.repository.PillTakenRepositoryImpl
+import com.example.test2.features.recordpill.ui.PillTakenScreen
+import com.example.test2.features.recordpill.ui.viewmodel.PillTakenViewModel
 import com.example.test2.features.water.data.repository.WaterRepositoryImpl
 import com.example.test2.features.water.ui.WaterScreen
 import com.example.test2.features.water.ui.viewmodel.WaterViewModel
@@ -194,7 +200,15 @@ fun HomeGraph(
                     PillRepositoryImpl
                 )
             )
-            PillScreen(viewModel)
+            PillScreen(viewModel, pillTakenAddPressed = {
+                pill : PillEntity->
+
+                navController.currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.set("pill", pill)
+
+                navController.navigate("pillIntake")
+            })
         }
 
         composable("activity") {
@@ -205,6 +219,26 @@ fun HomeGraph(
                 )
             )
             ActivityScreen(viewModel)
+        }
+
+        composable(route = "pillIntake") { backStackEntry ->
+
+
+            val pill :PillEntity = requireNotNull(
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<PillEntity>("pill")
+            ) {
+                "pill is mandatory"
+            }
+
+
+            val viewModel: PillTakenViewModel = viewModel(
+                factory = PillTakenViewModel.Factory(
+                    PillTakenRepositoryImpl, pill
+                )
+            )
+            PillTakenScreen(viewModel)
         }
 
 
