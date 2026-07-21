@@ -15,11 +15,6 @@ interface ActivityTakenDAO : TodoLineableDAO<ActivityTakenEntity> {
 
 
     fun insert(activityTakenEntity: ActivityTakenEntity) : Long
-    /**
-     * Removes (deletes) the given Object.
-     * @return true if an entity was actually removed (false if no entity exists with the given ID)
-     */
-    override fun delete(todoLineable: ActivityTakenEntity) : Boolean
 
     fun deleteByActivity(dailyActivityEntity: DailyActivityEntity)
 

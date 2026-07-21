@@ -27,6 +27,23 @@ object ActivityTakenDAOImpl : ActivityTakenDAO {
 
 
     override  fun insert(activityTakenEntity: ActivityTakenEntity) : Long {
+        check(activityTakenEntity.activity.targetId != 0L) {
+            """
+        ActivityTakenEntity.activity relation is missing.
+
+        exportPillId=${activityTakenEntity.exportActivityId}
+        targetId=${activityTakenEntity.activity.targetId}
+
+        Setting exportActivityId does NOT initialize the ObjectBox relation.
+        Use:
+
+        activityTakenEntity.activity.targetId = dailyActivityEntity.id
+
+        or
+
+        activityTakenEntity.activity.targetId = dailyActivityEntityId
+        """.trimIndent()
+        }
         //return the new key
         return mActivityTakenEntityBox.put(activityTakenEntity)
     }
@@ -36,6 +53,23 @@ object ActivityTakenDAOImpl : ActivityTakenDAO {
      * @return true if an entity was actually removed (false if no entity exists with the given ID)
      */
     override fun delete(todoLineable: ActivityTakenEntity) : Boolean {
+        check(todoLineable.activity.targetId != 0L) {
+            """
+        ActivityTakenEntity.activity relation is missing.
+
+        exportPillId=${todoLineable.exportActivityId}
+        targetId=${todoLineable.activity.targetId}
+
+        Setting exportActivityId does NOT initialize the ObjectBox relation.
+        Use:
+
+        activityTakenEntity.activity.targetId = dailyActivityEntity.id
+
+        or
+
+        activityTakenEntity.activity.targetId = dailyActivityEntityId
+        """.trimIndent()
+        }
         return mActivityTakenEntityBox.remove(todoLineable)
     }
 
