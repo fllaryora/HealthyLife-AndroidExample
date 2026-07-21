@@ -108,7 +108,7 @@ object PillTakenRepositoryImpl : PillTakenRepository {
         }
     }
 
-    //TEST NO OK
+    //TEST OK
     override suspend fun deleteByPill(pillEntity: PillEntity) : Unit{
         return withContext(ioDispatcher) {
             val returnedValue = mPillTakenDAO.deleteByPill(pillEntity)

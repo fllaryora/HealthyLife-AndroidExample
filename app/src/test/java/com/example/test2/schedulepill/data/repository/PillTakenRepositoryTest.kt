@@ -1,5 +1,6 @@
 package com.example.test2.schedulepill.data.repository
 
+import com.example.test2.data.converter.TimeConverter
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.pill.data.local.PillDAOImpl
 import com.example.test2.features.pill.data.local.PillEntity
@@ -24,6 +25,7 @@ import java.io.File
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import org.junit.Assert.assertNotEquals
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
@@ -107,7 +109,7 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
     advanceUntilIdle()
 
     val fixedTime: OffsetDateTime = OffsetDateTime.of(
-        2025, 10, 25, 14, 30, 0, 0,
+        2022, 10, 25, 14, 30, 0, 0,
         ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
     )
 
@@ -185,7 +187,7 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         advanceUntilIdle()
 
         val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
+            2023, 10, 25, 14, 30, 0, 0,
             ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
 
@@ -225,10 +227,9 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         )
     }
 
-    // test falla
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun insert_and_deleteByPill_should_emit_changes() = testScope.runTest {
+    fun insert_and_getAllByPill_should_emit_changes() = testScope.runTest {
 
 
         val expectedName = "Vitaminas"
@@ -242,28 +243,16 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         pillEntity.id = newReturnedId
 
 
-
-        // los rows en box arrancan con 1, 2,3,...y asi.
-        // pero lo hago de esta forma por si queres alucinar y decir que los indices son 0,1,2...
         val emissions = mutableListOf<List<PillTakenEntity>>()
         val secondEmission = CompletableDeferred<Unit>()
         val thirdEmission = CompletableDeferred<Unit>()
 
         val collectorJob = testScope.launch {
             PillTakenRepositoryImpl
-                .getAllByPill(pillEntity) // pillEntity con id == 1L que existe
+                .getAllByPill(pillEntity)
                 .collect { list ->
 
                     emissions.add(list)
-                    println("Emission ${emissions.size}")
-                    if (emissions.size == 2) {
-                        // lista vacia
-                        println("Emission ${emissions[1]}")
-                    }
-                    if (emissions.size == 3) {
-                        // lista vacia
-                        println("Emission ${emissions[2]}")
-                    }
                     when (emissions.size) {
                         2 -> secondEmission.complete(Unit)
                         3 -> thirdEmission.complete(Unit)
@@ -277,11 +266,11 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         advanceUntilIdle()
 
         val fixedTime1: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
+            2024, 10, 25, 14, 30, 0, 0,
             ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
         val fixedTime2: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 26, 14, 30, 0, 0,
+            2024, 10, 26, 14, 30, 0, 0,
             ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
 
@@ -327,22 +316,20 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         )
 
     }
-    
-/*
+
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun insert_and_deleteByPill_should_emit_changes() = testScope.runTest {
 
-
-        val expectedName = "Vitaminas"
+        val expectedName = "Supradin 200"
         var pillEntity = PillEntity(
             0L, expectedName
         )
-        PillRepositoryImpl.insert(
+        pillEntity.id = PillRepositoryImpl.insert(
             pillEntity
         )
         advanceUntilIdle()
-        pillEntity.id = 1L
 
         val emissions = mutableListOf<List<PillTakenEntity>>()
         val fourthEmission = CompletableDeferred<Unit>()
@@ -362,10 +349,14 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
                     if (emissions.size == 3) {
                         println("Emission ${emissions[2]}")
                     }
+                    if (emissions.size == 4) {
+                        println("Emission ${emissions[3]}")
+                    }
                     when (emissions.size) {
                         3 -> thirdEmission.complete(Unit)
                         4 -> fourthEmission.complete(Unit)
                     }
+
 
                     if (emissions.size == 4) {
                         cancel()
@@ -375,36 +366,23 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         advanceUntilIdle()
 
         val fixedTime1: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
+            2021, 10, 25, 14, 30, 0, 0,
             ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
         val fixedTime2: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 26, 14, 30, 0, 0,
+            2021, 10, 26, 14, 30, 0, 0,
             ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
 
-        val pillTakenEntity1 = PillTakenEntity(
-            0L, fixedTime1, true, pillEntity.id
-        )
+        val pillTakenEntity1 = PillTakenEntity.create(date = fixedTime1, pillEntityAsociated =  pillEntity)
+        val pillTakenEntity2 = PillTakenEntity.create(date = fixedTime2, pillEntityAsociated =  pillEntity)
 
-        val pillTakenEntity2 = PillTakenEntity(
-            0L, fixedTime2, true, pillEntity.id
-        )
 
-        PillTakenRepositoryImpl.insert(
-            PillTakenEntity(
-                0L, fixedTime1, true, pillEntity.id
-            )
-        )
+        pillTakenEntity1.id = PillTakenRepositoryImpl.insert(pillTakenEntity1)
         advanceUntilIdle()
-        pillTakenEntity1.id = 1L
-        PillTakenRepositoryImpl.insert(
-            PillTakenEntity(
-                0L, fixedTime2, true, pillEntity.id
-            )
-        )
+
+        pillTakenEntity2.id = PillTakenRepositoryImpl.insert(pillTakenEntity2)
         advanceUntilIdle()
-        pillTakenEntity2.id = 2L
         thirdEmission.await()
         println("Deleting by pillEntity...")
         PillTakenRepositoryImpl.deleteByPill(pillEntity)
@@ -413,6 +391,110 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
         collectorJob.join()
 
         assertEquals(4, emissions.size)
+
+        assertEquals(
+            0,
+            emissions[0].size
+        )
+
+        assertEquals(
+            1,
+            emissions[1].size
+        )
+
+        assertEquals(
+            1L,
+            emissions[1][0].pillEntity.target.id
+        )
+
+        assertEquals(
+            fixedTime1,
+            emissions[1][0].date
+        )
+
+        assertEquals(
+            2,
+            emissions[2].size
+        )
+
+        assertEquals(
+            fixedTime2,
+            emissions[2][1].date //target will do not work after delete.
+        )
+
+        assertEquals(
+            0,
+            emissions[3].size
+        )
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun insert_and_getPaginated_should_emit_changes() = testScope.runTest {
+
+
+        val expectedName = "Vitaminas"
+        var pillEntity = PillEntity(
+            0L, expectedName
+        )
+        val newReturnedId : Long =  PillRepositoryImpl.insert(
+            pillEntity
+        )
+        advanceUntilIdle()
+        pillEntity.id = newReturnedId
+
+        val emissions = mutableListOf<List<PillTakenEntity>>()
+        val secondEmission = CompletableDeferred<Unit>()
+        val thirdEmission = CompletableDeferred<Unit>()
+
+        val collectorJob = testScope.launch {
+            PillTakenRepositoryImpl
+                .getPillTakenList(pillEntity, 0L, 20L)
+                .collect { list ->
+
+                    emissions.add(list)
+                    when (emissions.size) {
+                        2 -> secondEmission.complete(Unit)
+                        3 -> thirdEmission.complete(Unit)
+                    }
+
+                    if (emissions.size == 3) {
+                        cancel()
+                    }
+                }
+        }
+        advanceUntilIdle()
+
+        val fixedTime1: OffsetDateTime = OffsetDateTime.of(
+            2024, 10, 25, 14, 30, 0, 0,
+            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        )
+        val fixedTime2: OffsetDateTime = OffsetDateTime.of(
+            2024, 10, 26, 14, 30, 0, 0,
+            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        )
+
+        val pillTakenEntity1 = PillTakenEntity.create(pillEntityAsociated = pillEntity, date = fixedTime1, )
+
+        val pillTakenEntity2 = PillTakenEntity.create(pillEntityAsociated = pillEntity, date = fixedTime2, )
+
+        val newReturnedId3 : Long =  PillTakenRepositoryImpl.insert(
+            pillTakenEntity1
+        )
+        advanceUntilIdle()
+        pillTakenEntity1.id = newReturnedId3
+        secondEmission.await()
+        val newReturnedId4 : Long =   PillTakenRepositoryImpl.insert(
+            pillTakenEntity2
+        )
+        advanceUntilIdle()
+        pillTakenEntity2.id = newReturnedId4
+        thirdEmission.await()
+
+        collectorJob.join()
+
+        assertEquals(3, emissions.size)
 
         assertEquals(
             0,
@@ -434,17 +516,119 @@ fun insert_and_deleteAll_should_emit_changes_after_insert_and_emit_after_deleteA
             emissions[2].size
         )
 
-        assertEquals(
-            fixedTime2,
-            emissions[2][0].date //target will do not work after delete.
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun insert_and_getPairPaginated_should_emit_changes() = testScope.runTest {
+
+
+        val expectedName = "Vitaminas"
+        var pillEntity = PillEntity(
+            0L, expectedName
         )
+        val newReturnedId : Long =  PillRepositoryImpl.insert(
+            pillEntity
+        )
+        advanceUntilIdle()
+        pillEntity.id = newReturnedId
+
+        val emissions = mutableListOf<Pair<List<PillTakenEntity>, Float?>>()
+        val secondEmission = CompletableDeferred<Unit>()
+        val thirdEmission = CompletableDeferred<Unit>()
+
+        val collectorJob = testScope.launch {
+            PillTakenRepositoryImpl
+                .getPillTaken(pillEntity, 0L, 20L)
+                .collect { list ->
+
+                    emissions.add(list)
+                    when (emissions.size) {
+                        2 -> secondEmission.complete(Unit)
+                        3 -> thirdEmission.complete(Unit)
+                    }
+
+                    if (emissions.size == 3) {
+                        cancel()
+                    }
+                }
+        }
+        advanceUntilIdle()
+
+        val fixedTime1: OffsetDateTime = OffsetDateTime.of(
+            2024, 10, 25, 14, 30, 0, 0,
+            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        )
+        val fixedTime2: OffsetDateTime = OffsetDateTime.of(
+            2024, 10, 26, 14, 30, 0, 0,
+            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        )
+
+        val pillTakenEntity1 = PillTakenEntity.create(pillEntityAsociated = pillEntity, date = fixedTime1, )
+
+        val pillTakenEntity2 = PillTakenEntity.create(pillEntityAsociated = pillEntity, date = fixedTime2, )
+
+        val newReturnedId3 : Long =  PillTakenRepositoryImpl.insert(
+            pillTakenEntity1
+        )
+        advanceUntilIdle()
+        pillTakenEntity1.id = newReturnedId3
+        secondEmission.await()
+        val newReturnedId4 : Long =   PillTakenRepositoryImpl.insert(
+            pillTakenEntity2
+        )
+        advanceUntilIdle()
+        pillTakenEntity2.id = newReturnedId4
+        thirdEmission.await()
+
+        collectorJob.join()
+
+        assertEquals(3, emissions.size)
 
         assertEquals(
             0,
-            emissions[3].size
+            emissions[0].first.size
         )
-    }*/
 
+        assertEquals(
+            null,
+            emissions[0].second
+        )
+
+        assertEquals(
+            1,
+            emissions[1].first.size
+        )
+
+        assertEquals(
+            fixedTime1,
+            emissions[1].first[0].date //target will do not work after delete.
+        )
+
+        val firstTake: Float? = TimeConverter.convertISOToHours(pillTakenEntity1.getTime())
+        assertEquals(
+            firstTake,
+            emissions[1].second //target will do not work after delete.
+        )
+
+
+        assertEquals(
+            2,
+            emissions[2].first.size
+        )
+
+        val secondTake: Float? = TimeConverter.convertISOToHours(pillTakenEntity2.getTime())
+        assertNotEquals(
+            secondTake,
+            emissions[2].second //target will do not work after delete.
+        )
+
+        assertEquals(
+            firstTake,
+            emissions[2].second //target will do not work after delete.
+        )
+
+    }
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")
     }
