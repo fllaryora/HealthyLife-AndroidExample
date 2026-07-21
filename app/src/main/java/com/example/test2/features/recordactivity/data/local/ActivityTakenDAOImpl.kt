@@ -11,11 +11,11 @@ import io.objectbox.query.QueryBuilder
  * This class is absolutely Framework dependent.
  * DAO for objectbox
  */
-object ActivityTakenDAOImpl : TodoLineableDAO<ActivityTakenEntity> {
+object ActivityTakenDAOImpl : ActivityTakenDAO {
 
     private lateinit var mActivityTakenEntityBox: Box<ActivityTakenEntity>
 
-    fun initialize(box: Box<ActivityTakenEntity>) {
+    override fun initialize(box: Box<ActivityTakenEntity>) {
         mActivityTakenEntityBox = box
     }
     private fun getActivityTakenQuery(dailyActivityEntity: DailyActivityEntity): Query<ActivityTakenEntity> {
@@ -26,7 +26,7 @@ object ActivityTakenDAOImpl : TodoLineableDAO<ActivityTakenEntity> {
     }
 
 
-    fun insert(activityTakenEntity: ActivityTakenEntity) : Long {
+    override  fun insert(activityTakenEntity: ActivityTakenEntity) : Long {
         //return the new key
         return mActivityTakenEntityBox.put(activityTakenEntity)
     }
@@ -39,33 +39,37 @@ object ActivityTakenDAOImpl : TodoLineableDAO<ActivityTakenEntity> {
         return mActivityTakenEntityBox.remove(todoLineable)
     }
 
-    fun deleteByActivity(dailyActivityEntity: DailyActivityEntity) {
+    override  fun deleteByActivity(dailyActivityEntity: DailyActivityEntity) {
         val list: List<ActivityTakenEntity> = getActivityTakenQuery(dailyActivityEntity).find()
         mActivityTakenEntityBox.remove(list)
     }
 
-    fun getActivityTaken(dailyActivityEntity: DailyActivityEntity, offset: Long, limit: Long) :
+    override  fun getActivityTaken(dailyActivityEntity: DailyActivityEntity, offset: Long, limit: Long) :
             Pair<List<ActivityTakenEntity>, Float?> {
         val list: List<ActivityTakenEntity> = getActivityTakenList(dailyActivityEntity,offset,limit)
         val firstTake: Float? = TimeConverter.convertISOToHours(list.firstOrNull()?.getTime())
         return Pair(list, firstTake)
     }
 
-    fun getActivityTakenList(dailyActivityEntity: DailyActivityEntity, offset: Long, limit: Long) :
+    override  fun getActivityTakenList(dailyActivityEntity: DailyActivityEntity, offset: Long, limit: Long) :
             List<ActivityTakenEntity>{
         val list :List<ActivityTakenEntity> = getActivityTakenQuery(dailyActivityEntity).find(offset,limit)
         return list.sortedBy { activityTakenEntity: ActivityTakenEntity -> activityTakenEntity.date }
     }
 
-    fun deleteAll(){
+    override  fun deleteAll(){
         return mActivityTakenEntityBox.removeAll()
     }
 
-    fun getAllByActivity(dailyActivityEntity: DailyActivityEntity) : List<ActivityTakenEntity>{
+    override  fun getAllByActivity(dailyActivityEntity: DailyActivityEntity) : List<ActivityTakenEntity>{
         return getActivityTakenQuery(dailyActivityEntity).find()
     }
 
-    fun getAll() : List<ActivityTakenEntity>{
+    override  fun getAll() : List<ActivityTakenEntity>{
         return mActivityTakenEntityBox.query().build().find()
+    }
+
+    override fun getBox() :Box<ActivityTakenEntity> {
+        return mActivityTakenEntityBox
     }
 }
