@@ -110,4 +110,11 @@ data class ActivityTakenEntity (
      */
 
     override fun isTakenT() = isTaken
+    companion object{
+        fun create(activityEntityAsociated: DailyActivityEntity, id: Long = 0L, date: OffsetDateTime = OffsetDateTime.now(), rating: Int = 0, isTaken: Boolean = true):ActivityTakenEntity {
+            return ActivityTakenEntity (id = id, date= date, rating = rating, isTaken = isTaken).apply {
+                activity.target = activityEntityAsociated
+            }
+        }
+    }
 }

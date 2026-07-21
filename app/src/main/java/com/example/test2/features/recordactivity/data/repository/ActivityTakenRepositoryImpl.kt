@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
 import kotlin.collections.toList
 
-class ActivityTakenRepositoryImpl : ActivityTakenRepository {
+object ActivityTakenRepositoryImpl : ActivityTakenRepository {
 
     private val invalidations = MutableSharedFlow<Unit>()
 

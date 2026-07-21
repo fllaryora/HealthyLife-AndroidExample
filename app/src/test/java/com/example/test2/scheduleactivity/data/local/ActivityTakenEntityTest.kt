@@ -1,12 +1,12 @@
-package com.example.test2.scheduleactivity.data
+package com.example.test2.scheduleactivity.data.local
 
-import com.example.test2.features.MyObjectBox
-import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
-import com.example.test2.features.recordactivity.data.local.ActivityTakenDAOImpl
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
-import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
+import com.example.test2.features.MyObjectBox
+import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
+import com.example.test2.features.recordactivity.data.local.ActivityTakenDAOImpl
+import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
@@ -131,11 +131,11 @@ open class ActivityTakenEntityTest {
         for(i  in 1..36) {
             activitiesOfWeek.forEach {
                     val activityTakenEntity : ActivityTakenEntity =
-                        ActivityTakenEntity(
-                            0L, someDayAtTheMorning,
-                            randRating()
+                        ActivityTakenEntity.create(
+                            date=  someDayAtTheMorning,
+                            rating = randRating(),
+                            activityEntityAsociated = it
                         )
-                    activityTakenEntity.activity.target = it
                     ActivityTakenDAOImpl.insert(
                         activityTakenEntity
                     )
@@ -212,11 +212,11 @@ open class ActivityTakenEntityTest {
         for(i  in 1..36) {
             activities6OfWeek.forEach {
                 val activityTakenEntity : ActivityTakenEntity =
-                    ActivityTakenEntity(
-                        0L, someDayAtTheMorning,
-                        randRating()
+                    ActivityTakenEntity.create(
+                        date = someDayAtTheMorning,
+                        rating = randRating(),
+                        activityEntityAsociated = it
                     )
-                activityTakenEntity.activity.target = it
                 ActivityTakenDAOImpl.insert(
                     activityTakenEntity
                 )
