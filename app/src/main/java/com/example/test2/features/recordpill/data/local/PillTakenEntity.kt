@@ -2,6 +2,7 @@ package com.example.test2.features.recordpill.data.local
 
 import com.example.test2.data.entities.behaviors.TodoLineable
 import com.example.test2.features.pill.data.local.PillEntity
+import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
 import com.example.test2.framework.data.database.TimeConverterForObjectBox
 import io.objectbox.BoxStore
@@ -92,6 +93,8 @@ data class PillTakenEntity (
         fun create(pillEntityAsociated: PillEntity, id: Long = 0L, date: OffsetDateTime = OffsetDateTime.now(), isTaken: Boolean = true):PillTakenEntity {
             return PillTakenEntity (id = id, date= date, isTaken = isTaken).apply {
                 pillEntity.target = pillEntityAsociated
+                //used in export action
+                exportPillId = pillEntityAsociated.id
             }
         }
     }

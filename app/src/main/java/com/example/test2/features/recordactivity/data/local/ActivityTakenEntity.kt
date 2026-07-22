@@ -3,6 +3,7 @@ package com.example.test2.features.recordactivity.data.local
 import com.example.test2.data.entities.behaviors.Graphable
 import com.example.test2.data.entities.behaviors.TodoLineable
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
+import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
 import com.example.test2.framework.data.database.TimeConverterForObjectBox
 import io.objectbox.BoxStore
@@ -114,6 +115,8 @@ data class ActivityTakenEntity (
         fun create(activityEntityAsociated: DailyActivityEntity, id: Long = 0L, date: OffsetDateTime = OffsetDateTime.now(), rating: Int = 0, isTaken: Boolean = true):ActivityTakenEntity {
             return ActivityTakenEntity (id = id, date= date, rating = rating, isTaken = isTaken).apply {
                 activity.target = activityEntityAsociated
+                //used in export action
+                exportActivityId = activityEntityAsociated.id
             }
         }
     }
