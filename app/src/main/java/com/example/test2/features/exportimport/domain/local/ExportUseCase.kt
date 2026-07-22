@@ -1,4 +1,4 @@
-package com.example.test2.features.exportimport.domain
+package com.example.test2.features.exportimport.domain.local
 
 import com.example.test2.features.dailyactivity.data.local.ActivityDAO
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAO
@@ -8,7 +8,7 @@ import com.example.test2.features.recordpill.data.local.PillTakenDAO
 import com.example.test2.features.water.data.local.WaterDAO
 import com.example.test2.features.weight.data.local.WeightDAO
 
-interface ImportUseCase {
+interface ExportUseCase {
     fun initialize(
         weightDAO: WeightDAO,
         waterDAO: WaterDAO,
@@ -19,5 +19,5 @@ interface ImportUseCase {
         activityTakenDAO: ActivityTakenDAO
     )
 
-    fun invokeImport(databaseString: String)
+    fun invokeExport():  String
 }

@@ -6,8 +6,8 @@ import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.dailyactivity.data.repository.ActivityRepositoryImpl
 import com.example.test2.features.dailyactivity.domain.ActivityUseCaseImpl
 import com.example.test2.features.dailyactivity.domain.repository.ActivityUseCaseRepositoryImpl
-import com.example.test2.features.exportimport.domain.ExportUseCaseImpl
-import com.example.test2.features.exportimport.domain.ImportUseCaseImpl
+import com.example.test2.features.exportimport.domain.local.ExportUseCaseImpl
+import com.example.test2.features.exportimport.domain.local.ImportUseCaseImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
@@ -72,7 +72,7 @@ fun objectBoxInitialization(app : Application) {
         activityDAO = ActivityDAOImpl,
         pillTakenDAO = PillTakenDAOImpl,
         activityTakenDAO = ActivityTakenDAOImpl)
-    
+
     ImportUseCaseImpl.initialize(
         weightDAO = WeightDAOImpl,
         waterDAO=  WaterDAOImpl,

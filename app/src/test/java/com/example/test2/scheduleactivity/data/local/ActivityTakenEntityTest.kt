@@ -25,13 +25,6 @@ open class ActivityTakenEntityTest {
     protected val store: BoxStore
         get() = _store!!
 
-    private fun coin(from: Int, until: Int): Int {
-        return Random(System.nanoTime()).nextInt(from = from, until = until)
-    }
-
-    private fun randTaken(): Boolean {
-        return Random(System.nanoTime()).nextBoolean()
-    }
 
     private fun randRating(): Int {
         return Random(System.nanoTime()).nextInt(0, 10)
