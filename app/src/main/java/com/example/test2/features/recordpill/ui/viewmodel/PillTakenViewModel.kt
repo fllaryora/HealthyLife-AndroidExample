@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.test2.features.pill.data.local.PillEntity
-import com.example.test2.features.pill.data.repository.PillRepository
 import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import com.example.test2.features.recordpill.data.repository.PillTakenRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +19,6 @@ class PillTakenViewModel(
 ) : ViewModel() {
 
     private val _pillsTaken = MutableStateFlow<List<PillTakenEntity>>(emptyList())
-    private val _pill = MutableStateFlow<PillEntity?>(null)
     val pillsTaken: StateFlow<List<PillTakenEntity>> = _pillsTaken.asStateFlow()
 
 

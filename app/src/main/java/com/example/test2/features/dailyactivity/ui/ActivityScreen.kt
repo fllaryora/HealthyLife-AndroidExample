@@ -25,6 +25,7 @@ import com.example.test2.features.dailyactivity.ui.components.SingleActivityItem
 @Composable
 fun ActivityScreen(
     viewModel: ActivityViewModel,
+    activityTakenAddPressed: (DailyActivityEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -76,9 +77,9 @@ fun ActivityScreen(
             })
         }
 
-        activityFunctionList(activities, { dailyActivityEntity ->
+        activityFunctionList(activities = activities, activityDeletePressed ={ dailyActivityEntity ->
             viewModel.deleteActivity(dailyActivityEntity)
-        })
+        }, activityTakenAddPressed = activityTakenAddPressed)
 
     }
 
@@ -86,7 +87,8 @@ fun ActivityScreen(
 
 fun LazyListScope.activityFunctionList(
     activities: List<DailyActivityEntity>,
-    activityDeletePressed: (DailyActivityEntity) -> Unit
+    activityDeletePressed: (DailyActivityEntity) -> Unit,
+    activityTakenAddPressed: (DailyActivityEntity) -> Unit,
 ) {
     if (activities.isEmpty()) {
         item {
@@ -104,7 +106,7 @@ fun LazyListScope.activityFunctionList(
             )
         }
         items(activities) { activity: DailyActivityEntity ->
-            SingleActivityItem(activity, activityDeletePressed)
+            SingleActivityItem(activity, activityDeletePressed, activityTakenAddPressed)
         }
 
     }

@@ -1,4 +1,4 @@
-package com.example.test2.features.recordpill.ui
+package com.example.test2.features.recordactivity.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,20 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import com.example.test2.features.recordpill.data.local.PillTakenEntity
-import com.example.test2.features.recordpill.ui.viewmodel.PillTakenViewModel
+import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
+import com.example.test2.features.recordactivity.ui.viewmodel.ActivityTakenViewModel
 
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
 @Composable
-fun PillTakenScreen(
-    viewModel: PillTakenViewModel,
+fun ActivityTakenScreen(
+    viewModel: ActivityTakenViewModel,
     modifier: Modifier = Modifier
 ) {
 
-    val pillsTaken: List<PillTakenEntity>  by viewModel.pillsTaken.collectAsState()
+    val pillsTaken: List<ActivityTakenEntity>  by viewModel.activitiesTaken.collectAsState()
     val loading: Boolean  by viewModel.loading.collectAsState()
 
     if (loading) {
@@ -46,13 +46,13 @@ fun PillTakenScreen(
 
     Column ( modifier = modifier) {
         FieldWithCow( { ->
-            viewModel.addPillTaken()
+            viewModel.addActivityTaken()
         })
         JustTheList(
             pillsTaken,
             {
-                    pillTaken: PillTakenEntity->
-                viewModel.deletePillTaken(pillTaken)
+                    activityTaken: ActivityTakenEntity->
+                viewModel.deleteActivityTaken(activityTaken)
             }
         )
     }
@@ -61,7 +61,7 @@ fun PillTakenScreen(
 
 @Composable
 fun FieldWithCow (
-    pillTakenAddPressed: () -> Unit
+    activityTakenAddPressed: () -> Unit
 ) {
 
 
@@ -71,7 +71,7 @@ fun FieldWithCow (
 
         Button(
             onClick = {
-                pillTakenAddPressed()
+                activityTakenAddPressed()
 
             }
         ) {
@@ -83,10 +83,10 @@ fun FieldWithCow (
 
 @Composable
 fun JustTheList(
-    pillsTaken: List<PillTakenEntity>,
-    pillTakenDeletePressed: (PillTakenEntity) -> Unit
+    activitiesTaken: List<ActivityTakenEntity>,
+     activityTakenDeletePressed: (ActivityTakenEntity) -> Unit
 ) {
-    if( pillsTaken.isEmpty()  ){
+    if( activitiesTaken.isEmpty()  ){
         Text(
             text = "Empty View",
 
@@ -98,13 +98,13 @@ fun JustTheList(
     Column {
 
         Text(
-            text = "Pill Takens (${pillsTaken.size})",
+            text = "Activities Taken (${activitiesTaken.size})",
             style = MaterialTheme.typography.headlineSmall
         )
 
         LazyColumn {
-            items(pillsTaken) { pillTaken : PillTakenEntity ->
-                JustTheItem(pillTaken, pillTakenDeletePressed)
+            items(activitiesTaken) { activityTaken : ActivityTakenEntity ->
+                JustTheItem(activityTaken, activityTakenDeletePressed)
             }
         }
     }
@@ -113,8 +113,8 @@ fun JustTheList(
 
 @Composable
 fun JustTheItem(
-    pillTaken : PillTakenEntity,
-    pillTakenDeletePressed: (PillTakenEntity) -> Unit
+    activityTaken : ActivityTakenEntity,
+    activityTakenDeletePressed: (ActivityTakenEntity) -> Unit
 ) {
 
     val locale = Locale.getDefault()
@@ -125,17 +125,17 @@ fun JustTheItem(
         else -> "dd-MM-yyyy"
     }
 
-    val formattedDate = pillTaken.date.format(
+    val formattedDate = activityTaken.date.format(
         DateTimeFormatter.ofPattern(pattern)
     )
 
     Row{
         Text(
-            text = "$formattedDate - ${pillTaken.pillEntity.target.name}"
+            text = "$formattedDate - ${activityTaken.activity.target.name}"
         )
         Button(
             onClick = {
-                pillTakenDeletePressed(pillTaken)
+                activityTakenDeletePressed(activityTaken)
             }
         ) {
             Text("Delete")

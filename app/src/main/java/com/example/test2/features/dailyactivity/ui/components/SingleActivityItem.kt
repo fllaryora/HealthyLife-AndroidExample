@@ -22,7 +22,8 @@ import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 @Composable
 fun SingleActivityItem(
     activity: DailyActivityEntity,
-    activityDeletePressed: (DailyActivityEntity) -> Unit
+    activityDeletePressed: (DailyActivityEntity) -> Unit,
+    activityTakenAddPressed: (DailyActivityEntity) -> Unit,
 ) {
 
     Card(
@@ -104,6 +105,13 @@ fun SingleActivityItem(
                     }
                 ) {
                     Text("Eliminar Actividad")
+                }
+                Button(
+                    onClick = {
+                        activityTakenAddPressed(activity)
+                    }
+                ) {
+                    Text("Add  Actividad Taken ")
                 }
             }
         }
