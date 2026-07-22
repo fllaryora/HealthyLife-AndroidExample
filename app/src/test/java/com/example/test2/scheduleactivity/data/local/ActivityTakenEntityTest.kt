@@ -1,5 +1,6 @@
 package com.example.test2.scheduleactivity.data.local
 
+import com.example.test2.TestDateFactory
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.features.MyObjectBox
@@ -25,10 +26,6 @@ open class ActivityTakenEntityTest {
     protected val store: BoxStore
         get() = _store!!
 
-
-    private fun randRating(): Int {
-        return Random(System.nanoTime()).nextInt(0, 10)
-    }
 
     @Before
     fun setUp() {
@@ -113,29 +110,26 @@ open class ActivityTakenEntityTest {
 
 
         val activitiesOfWeek : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-            .minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for(i  in 1..36) {
-            activitiesOfWeek.forEach {
+        val rating = TestDateFactory.ratingSequence().iterator()
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                activitiesOfWeek.forEach {
                     val activityTakenEntity : ActivityTakenEntity =
                         ActivityTakenEntity.create(
                             date=  someDayAtTheMorning,
-                            rating = randRating(),
+                            rating = rating.next(),
                             activityEntityAsociated = it
                         )
                     ActivityTakenDAOImpl.insert(
                         activityTakenEntity
                     )
+                }
             }
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
+
         //6 activities  in 36 days
         val allList2 : List<ActivityTakenEntity> = ActivityTakenDAOImpl.getAll()
         Assert.assertEquals(36 * 6, allList2.size)
@@ -194,29 +188,26 @@ open class ActivityTakenEntityTest {
 
 
         val activities6OfWeek : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-            .minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for(i  in 1..36) {
-            activities6OfWeek.forEach {
-                val activityTakenEntity : ActivityTakenEntity =
-                    ActivityTakenEntity.create(
-                        date = someDayAtTheMorning,
-                        rating = randRating(),
-                        activityEntityAsociated = it
+        val rating = TestDateFactory.ratingSequence().iterator()
+
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                activities6OfWeek.forEach {
+                    val activityTakenEntity : ActivityTakenEntity =
+                        ActivityTakenEntity.create(
+                            date=  someDayAtTheMorning,
+                            rating = rating.next(),
+                            activityEntityAsociated = it
+                        )
+                    ActivityTakenDAOImpl.insert(
+                        activityTakenEntity
                     )
-                ActivityTakenDAOImpl.insert(
-                    activityTakenEntity
-                )
+                }
             }
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
 
         // 6 activities , taken in 36 days
         var allActivitiesTaken : List<ActivityTakenEntity> = ActivityTakenDAOImpl.getAll()

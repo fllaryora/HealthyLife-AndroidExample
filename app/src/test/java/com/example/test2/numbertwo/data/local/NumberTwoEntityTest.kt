@@ -1,5 +1,6 @@
 package com.example.test2.numbertwo.data.local
 
+import com.example.test2.TestDateFactory
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
@@ -50,11 +51,6 @@ open class NumberTwoEntityTest {
 
     @Test
     fun fetchEmptyDataBaseShouldReturnZeroRecords() {
-        // Get a box and use ObjectBox as usual
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
-        )
         val list: List<NumberTwoEntity> = NumberTwoDAOImpl.getNumberTwoList(0L, 20L)
         val allList : List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
 
@@ -64,22 +60,17 @@ open class NumberTwoEntityTest {
     }
 
     @Test
-    fun insetWeightsAndGetTheData() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+    fun insetBathroomVisitsAndGetTheData() {
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0
         )
-        val aDay = 1L
         val days = 50
-        var lastInsert = 0L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..days) {
-            lastInsert = NumberTwoDAOImpl.insert(NumberTwoEntity(0L, someDayAtTheMorning))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
-
+        dates.take(days)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                NumberTwoDAOImpl.insert(
+                    NumberTwoEntity(0L, someDayAtTheMorning, )
+                )
+            }
         val list: List<NumberTwoEntity> = NumberTwoDAOImpl.getNumberTwoList(0L, 20L)
         val allList : List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
         Assert.assertEquals(20, list.size)
@@ -94,21 +85,16 @@ open class NumberTwoEntityTest {
 
     @Test
     fun sparse() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-                2025, 10, 25, 14, 30, 0, 0,
-        ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0,
         )
-        val aDay = 1L
         val days = 50
-        var lastInsert = 0L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..days) {
-            lastInsert = NumberTwoDAOImpl.insert(NumberTwoEntity(0L, someDayAtTheMorning))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
-
+        dates.take(days)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                NumberTwoDAOImpl.insert(
+                    NumberTwoEntity(0L, someDayAtTheMorning, )
+                )
+            }
         var allList = NumberTwoDAOImpl.getAll()
         val touch : Int  = coin(0, allList.size-1)
         allList.forEachIndexed { index, water : NumberTwoEntity ->

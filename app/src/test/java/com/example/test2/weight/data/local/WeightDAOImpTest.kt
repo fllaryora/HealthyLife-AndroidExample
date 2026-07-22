@@ -1,7 +1,9 @@
 package com.example.test2.weight.data.local
 
+import com.example.test2.TestDateFactory
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.weight.data.local.WeightDAOImpl
+import com.example.test2.features.weight.data.local.WeightDAOImpl.insert
 import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
@@ -23,10 +25,6 @@ open class WeightDAOImpTest {
 
     private fun coin(from: Int, until: Int): Int {
         return Random(System.nanoTime()).nextInt(from = from, until = until)
-    }
-
-    private fun rand(): Float {
-        return Random(System.nanoTime()).nextDouble(70.0, 180.0).toFloat()
     }
 
 
@@ -68,17 +66,19 @@ open class WeightDAOImpTest {
 
     @Test
     fun insetWeightsAndGetTheData() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
-        }
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                WeightDAOImpl.insert(
+                    WeightEntity(0L, someDayAtTheMorning, iterator.next())
+                )
+            }
+
 
         val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
         val allList : List<WeightEntity> = WeightDAOImpl.getAll()
@@ -96,17 +96,16 @@ open class WeightDAOImpTest {
 
     @Test
     fun sparse() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, rand()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
-        }
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                WeightDAOImpl.insert(
+                    WeightEntity(0L, someDayAtTheMorning, iterator.next())
+                )
+            }
 
         var allList = WeightDAOImpl.getAll()
         val touch : Int  = coin(0, allList.size-1)

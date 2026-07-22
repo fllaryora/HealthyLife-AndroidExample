@@ -1,5 +1,6 @@
 package com.example.test2.exportimport.domain.local
 
+import com.example.test2.TestDateFactory
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.data.entities.enums.toMask
@@ -114,23 +115,6 @@ open class ExportUseCaseTest {
     }
 
 
-    private val randWeights = sequence {
-        while (true) {
-            for (i in 70..180) {
-                yield(i.toFloat())
-            }
-        }
-    }.iterator()
-
-    private val randRating = sequence {
-        while (true) {
-            for (i in 1..10) {
-                yield(i)
-            }
-        }
-    }.iterator()
-
-
     private fun takeTheFileFromGradle() : String {
         val expectedDataBaseFile: URL = javaClass.classLoader!!
             .getResource("expectedDataBase.json")
@@ -187,48 +171,49 @@ open class ExportUseCaseTest {
     }
 
     private fun insertWeights() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime =
-            fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for (i in 1..36) {
-            WeightDAOImpl.insert(WeightEntity(0L, someDayAtTheMorning, this.randWeights.next()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
-        }
+
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                WeightDAOImpl.insert(
+                    WeightEntity(0L, someDayAtTheMorning, iterator.next())
+                )
+            }
     }
 
     private fun insertWaters() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            WaterDAOImpl.insert(WaterEntity(0L, someDayAtTheMorning, this.randWeights.next()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
-        }
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                WaterDAOImpl.insert(
+                    WaterEntity(0L, someDayAtTheMorning, iterator.next())
+                )
+            }
     }
 
     private fun insertNumberTwo() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
         val days = 50
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..days) {
-            NumberTwoDAOImpl.insert(NumberTwoEntity(0L, someDayAtTheMorning))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
+
+        dates.take(days)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                NumberTwoDAOImpl.insert(
+                    NumberTwoEntity(0L, someDayAtTheMorning, )
+                )
+            }
     }
     private fun insertPillTaken() {
         val supradin: PillEntity = PillEntity(0L, "Supradin Forte")
@@ -237,25 +222,21 @@ open class ExportUseCaseTest {
         PillDAOImpl.insert(totalMagneciano)
         val pillEntityList : List<PillEntity> = PillDAOImpl.getPills()
 
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for(i  in 1..36) {
-            pillEntityList.forEach {
-                val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = it, date = someDayAtTheMorning, )
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                pillEntityList.forEach {
+                    val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = it, date = someDayAtTheMorning, )
 
-                PillTakenDAOImpl.insert(
-                    pillTakenEntity
-                )
+                    PillTakenDAOImpl.insert(
+                        pillTakenEntity
+                    )
+                }
             }
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
-
     }
 
     private fun insertActivityTaken() {
@@ -311,30 +292,26 @@ open class ExportUseCaseTest {
 
 
         val activities6OfWeek : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
-        )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-            .minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for(i  in 1..36) {
-            activities6OfWeek.forEach {
-                val activityTakenEntity : ActivityTakenEntity =
-                    ActivityTakenEntity.create(
-                        date = someDayAtTheMorning,
-                        rating = this.randRating.next(),
-                        activityEntityAsociated = it
-                    )
-                ActivityTakenDAOImpl.insert(
-                    activityTakenEntity
-                )
-            }
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
+        val rating = TestDateFactory.ratingSequence().iterator()
 
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0
+        )
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                activities6OfWeek.forEach {
+                    val activityTakenEntity : ActivityTakenEntity =
+                        ActivityTakenEntity.create(
+                            date = someDayAtTheMorning,
+                            rating = rating.next(),
+                            activityEntityAsociated = it
+                        )
+                    ActivityTakenDAOImpl.insert(
+                        activityTakenEntity
+                    )
+                }
+            }
     }
 }
 

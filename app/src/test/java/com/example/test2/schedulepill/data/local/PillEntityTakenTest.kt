@@ -1,5 +1,6 @@
 package com.example.test2.schedulepill.data.local
 
+import com.example.test2.TestDateFactory
 import com.example.test2.data.converter.TimeConverter
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.pill.data.local.PillDAOImpl
@@ -27,7 +28,6 @@ open class PillEntityTakenTest {
     private fun coin(from: Int, until: Int): Int {
         return Random(System.nanoTime()).nextInt(from = from, until = until)
     }
-
 
 
     @Before
@@ -84,24 +84,21 @@ open class PillEntityTakenTest {
         PillDAOImpl.insert(totalMagneciano)
         val pillEntityList : List<PillEntity> = PillDAOImpl.getPills()
 
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
-        )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for(i  in 1..36) {
-            pillEntityList.forEach {
-                val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = it, date = someDayAtTheMorning, )
 
-                PillTakenDAOImpl.insert(
-                    pillTakenEntity
-                )
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0,
+        )
+
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                pillEntityList.forEach { pillEntity : PillEntity ->
+                    val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = pillEntity, date = someDayAtTheMorning, )
+
+                    PillTakenDAOImpl.insert(
+                        pillTakenEntity
+                    )
+                }
             }
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
 
         val allList : List<PillTakenEntity> = PillTakenDAOImpl.getAll()
         Assert.assertEquals(72, allList.size)
@@ -129,24 +126,19 @@ open class PillEntityTakenTest {
         PillDAOImpl.insert(totalMagneciano)
         val pillEntityList : List<PillEntity> = PillDAOImpl.getPills()
 
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for(i  in 1..36) {
-            pillEntityList.forEach {
-                val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = it, date = someDayAtTheMorning, )
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                pillEntityList.forEach { pillEntity : PillEntity ->
+                    val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = pillEntity, date = someDayAtTheMorning, )
 
-                PillTakenDAOImpl.insert(
-                    pillTakenEntity
-                )
+                    PillTakenDAOImpl.insert(
+                        pillTakenEntity
+                    )
+                }
             }
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay)
-                .withHour(7).withMinute(0)
-        }
 
         val touch = coin(0, pillEntityList.size - 1)
         pillEntityList.forEachIndexed { index, pillEntity : PillEntity ->

@@ -1,5 +1,6 @@
 package com.example.test2.water.data.local
 
+import com.example.test2.TestDateFactory
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.water.data.local.WaterEntity
 import com.example.test2.features.water.data.local.WaterDAOImpl
@@ -72,29 +73,31 @@ open class WaterTest {
 
     @Test
     fun insetWeightsAndGetTheData() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
+
+
+        val dates : Sequence<OffsetDateTime> =
+            TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
         )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            WaterDAOImpl.insert(WaterEntity(0L, someDayAtTheMorning, rand()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
-        }
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                WaterDAOImpl.insert(
+                    WaterEntity(0L, someDayAtTheMorning, iterator.next())
+                )
+            }
+
 
         val list: List<WaterEntity> = WaterDAOImpl.getWaters(0L, 20L)
         val allList : List<WaterEntity> = WaterDAOImpl.getAll()
         Assert.assertEquals(20, list.size)
         Assert.assertEquals(36, allList.size)
-        someDayAtTheMorning = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            val dayList : List<WaterEntity>  = WaterDAOImpl.getIntakesByDay(someDayAtTheMorning)
-            Assert.assertEquals(1, dayList.size)
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
-        }
 
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                 val dayList : List<WaterEntity>  = WaterDAOImpl.getIntakesByDay(someDayAtTheMorning)
+                Assert.assertEquals(1, dayList.size)
+            }
 
     }
 
@@ -105,17 +108,18 @@ open class WaterTest {
 
     @Test
     fun sparse() {
-        val fixedTime: OffsetDateTime = OffsetDateTime.of(
-            2025, 10, 25, 14, 30, 0, 0,
-            ZoneOffset.ofHours(-3) // Example: UTC-3 for Argentina
-        )
-        val aDay = 1L
-        val sinceAYearAgoAtTheMorning: OffsetDateTime = fixedTime.minusDays(35L).withHour(7).withMinute(0)
-        var someDayAtTheMorning: OffsetDateTime = sinceAYearAgoAtTheMorning
-        for( i  in 1..36) {
-            WaterDAOImpl.insert(WaterEntity(0L, someDayAtTheMorning, rand()))
-            someDayAtTheMorning = someDayAtTheMorning.plusDays(aDay).withHour(7).withMinute(0)
-        }
+
+        val dates : Sequence<OffsetDateTime> =
+            TestDateFactory.dailySequence(
+                2025, 10, 25, 14, 30, 0, 0,
+            )
+        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                WaterDAOImpl.insert(
+                    WaterEntity(0L, someDayAtTheMorning, iterator.next())
+                )
+            }
 
         var allList = WaterDAOImpl.getAll()
         val touch : Int  = coin(0, allList.size-1)
