@@ -1,5 +1,6 @@
 package com.example.test2.features.pill.data.local
 
+import com.example.test2.data.entities.behaviors.Importable
 import com.example.test2.data.entities.behaviors.Nameable
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
@@ -32,11 +33,18 @@ data class PillEntity (
     var id: Long = 0,///must be called id and must be a Long :(
     @Unique
     val name: String
-) : java.io.Serializable, Nameable {
+) : java.io.Serializable, Nameable, Importable<PillEntity, String> {
 
     /**
      * Returns the display label associated with this pillEntity.
      */
 
     override fun getLabel() = name
+    override fun prepareForImport(): PillEntity {
+        return copy(id = 0L)
+    }
+
+    override fun importSortKey(): String {
+        return name
+    }
 }

@@ -1,9 +1,13 @@
 package com.example.test2.pill.data.local
 
+import com.example.test2.data.entities.behaviors.prepareForImport
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.pill.data.local.PillDAOImpl
 import com.example.test2.features.pill.data.local.PillEntity
+import com.example.test2.features.water.data.local.WaterDAOImpl
+import com.example.test2.features.water.data.local.WaterEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
@@ -22,6 +26,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.net.URL
 
 open class PillEntityTest {
 
@@ -121,6 +126,43 @@ open class PillEntityTest {
                 2L -> assertEquals(name2, currentName)
             }
         }
+
+    }
+
+    private fun takeTheFileFromGradle() : String {
+        val expectedDataBaseFile: URL = javaClass.classLoader!!
+            .getResource("pills.json")
+
+        /*This part is a crapy part
+        because it will fail outside gradle world
+        * */
+        println(expectedDataBaseFile.file)
+        assertEndsWith(
+            "The path of the resource file",
+            "app/build/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out/pills.json",
+            expectedDataBaseFile.file
+        )
+
+
+        val databaseString = javaClass.classLoader!!
+            .getResource("pills.json")!!
+            .readText()
+
+        return databaseString
+    }
+
+
+    @Test
+    fun decodeTest() {
+
+        val importEntity :List<PillEntity> = Json.decodeFromString<List<PillEntity>>(takeTheFileFromGradle())
+
+        importEntity.prepareForImport().forEach { we: PillEntity ->
+            PillDAOImpl.insert(we)
+        }
+
+        val list: List<PillEntity> = PillDAOImpl.getPills()
+        Assert.assertEquals(2, list.size)
 
     }
 
