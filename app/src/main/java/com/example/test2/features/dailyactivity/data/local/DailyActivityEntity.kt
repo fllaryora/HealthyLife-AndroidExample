@@ -51,7 +51,7 @@ data class DailyActivityEntity (
     var daysOfWeek: Int,
     var typeOfRecorder : Int,
     var isAlarmEnabled:Boolean = false //not used anymore
-): java.io.Serializable, Nameable, Importable<DailyActivityEntity, String> {
+): java.io.Serializable, Nameable, Importable<DailyActivityEntity, Long> {
     /**
      *  @return It returns 0 if otherActivity is equal to this (both of type DailyActivityEntity)
      *  A negative value will be returned if otherActivity is before this.
@@ -67,7 +67,8 @@ data class DailyActivityEntity (
         return copy(id = 0L)
     }
 
-    override fun importSortKey(): String {
-        return name
+    //Ordena ascendente : las entidades para luego mantener los ID al importar los activityTaken.
+    override fun importSortKey(): Long {
+        return id
     }
 }

@@ -33,7 +33,7 @@ data class PillEntity (
     var id: Long = 0,///must be called id and must be a Long :(
     @Unique
     val name: String
-) : java.io.Serializable, Nameable, Importable<PillEntity, String> {
+) : java.io.Serializable, Nameable, Importable<PillEntity, Long> {
 
     /**
      * Returns the display label associated with this pillEntity.
@@ -44,7 +44,7 @@ data class PillEntity (
         return copy(id = 0L)
     }
 
-    override fun importSortKey(): String {
-        return name
+    override fun importSortKey(): Long {
+        return id
     }
 }

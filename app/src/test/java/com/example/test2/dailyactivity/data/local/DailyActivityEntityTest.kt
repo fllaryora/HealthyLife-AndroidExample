@@ -292,7 +292,6 @@ open class DailyActivityEntityTest {
 
     }
 
-
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")
     }
