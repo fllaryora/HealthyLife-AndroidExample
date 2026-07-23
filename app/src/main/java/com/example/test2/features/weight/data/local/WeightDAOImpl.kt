@@ -27,6 +27,11 @@ object WeightDAOImpl : WeightDAO {
         check(weightEntity.id == 0L) {
             """
         ID is higher or equal to internal ID sequence: 1 (vs. 1). Use ID 0 (zero) to insert new objects.
+        
+        Should I export the ObjectBox IDs, or should I treat them as internal persistence details?
+        No. The ID is infrastructure data.
+        date + weight are the business data.
+        
         """.trimIndent()
         }
         //return the new key
