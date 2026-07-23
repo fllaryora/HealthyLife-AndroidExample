@@ -2,13 +2,21 @@ package com.example.test2.numbertwo.data.local
 
 import com.example.test2.TestDateFactory
 import com.example.test2.features.MyObjectBox
+import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -108,6 +116,33 @@ open class NumberTwoEntityTest {
         Assert.assertEquals(1, list.size)
         Assert.assertEquals(1, allList.size)
 
+    }
+
+    @Test
+    fun encodeTest() {
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0
+        )
+        val days = 50
+        dates.take(days)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                NumberTwoDAOImpl.insert(
+                    NumberTwoEntity(0L, someDayAtTheMorning, )
+                )
+            }
+        var allList: List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
+
+        val prettyJson:String = jsonPropertiesForExport.encodeToString(allList)
+
+        val jsonElement: JsonElement = Json.parseToJsonElement(prettyJson)
+
+        jsonElement.jsonArray.forEach { element: JsonElement ->
+            val obj: JsonObject = element.jsonObject
+            assertTrue(obj.containsKey("id"))
+            assertTrue(obj.containsKey("date"))
+            assertTrue(obj.containsKey("isTaken"))
+        }
     }
 
     companion object {

@@ -2,20 +2,27 @@ package com.example.test2.weight.data.local
 
 import com.example.test2.TestDateFactory
 import com.example.test2.features.MyObjectBox
+import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.weight.data.local.WeightDAOImpl
-import com.example.test2.features.weight.data.local.WeightDAOImpl.insert
+
 import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import kotlin.random.Random
+
 
 open class WeightDAOImpTest {
 
@@ -67,18 +74,11 @@ open class WeightDAOImpTest {
     @Test
     fun insetWeightsAndGetTheData() {
 
-        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
-            2025, 10, 25, 14, 30, 0, 0
-        )
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
-
-        dates.take(36)
-            .forEach { someDayAtTheMorning: OffsetDateTime ->
-                WeightDAOImpl.insert(
-                    WeightEntity(0L, someDayAtTheMorning, iterator.next())
-                )
-            }
-
+        TestDateFactory.buildWeights(2025, 10, 25, 14, 30, 0, 0,
+            36
+        ).forEach { we: WeightEntity ->
+            WeightDAOImpl.insert(we)
+        }
 
         val list: List<WeightEntity> = WeightDAOImpl.getWeights(0L, 20L)
         val allList : List<WeightEntity> = WeightDAOImpl.getAll()
@@ -96,16 +96,12 @@ open class WeightDAOImpTest {
 
     @Test
     fun sparse() {
-        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
-            2025, 10, 25, 14, 30, 0, 0
-        )
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
-        dates.take(36)
-            .forEach { someDayAtTheMorning: OffsetDateTime ->
-                WeightDAOImpl.insert(
-                    WeightEntity(0L, someDayAtTheMorning, iterator.next())
-                )
-            }
+
+        TestDateFactory.buildWeights(2025, 10, 25, 14, 30, 0, 0,
+            36
+        ).forEach { we: WeightEntity ->
+            WeightDAOImpl.insert(we)
+        }
 
         var allList = WeightDAOImpl.getAll()
         val touch : Int  = coin(0, allList.size-1)
@@ -119,6 +115,29 @@ open class WeightDAOImpTest {
 
         Assert.assertEquals(1, allList.size)
 
+    }
+
+    @Test
+    fun encodeTest() {
+
+        TestDateFactory.buildWeights(2025, 10, 25, 14, 30, 0, 0,
+            36
+        ).forEach { we: WeightEntity ->
+            WeightDAOImpl.insert(we)
+        }
+
+        val list: List<WeightEntity> = WeightDAOImpl.getAll()
+
+        val prettyJson:String = jsonPropertiesForExport.encodeToString(list)
+        println(prettyJson)
+        val jsonElement: JsonElement = Json.parseToJsonElement(prettyJson)
+
+        jsonElement.jsonArray.forEach { element: JsonElement ->
+            val obj: JsonObject = element.jsonObject
+            assertTrue(obj.containsKey("id"))
+            assertTrue(obj.containsKey("date"))
+            assertTrue(obj.containsKey("weight"))
+        }
     }
 
     companion object {

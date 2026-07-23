@@ -18,6 +18,10 @@ import com.example.test2.features.weight.data.local.WeightEntity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
+val jsonPropertiesForExport = Json {
+    prettyPrint = true
+    encodeDefaults = true
+}
 object ExportUseCaseImpl : ExportUseCase {
     private var isInit: Boolean = false
 
@@ -56,6 +60,13 @@ object ExportUseCaseImpl : ExportUseCase {
             val pillsTaken : List<PillTakenEntity> = mPillTakenDAO.getAll()
             val activitiesTaken: List<ActivityTakenEntity> = maActivityTakenDAO.getAll()
 
+            for(pillTaken in pillsTaken){
+                pillTaken.exportPillId = pillTaken.pillEntity.targetId
+            }
+            for(activityTaken in activitiesTaken){
+                activityTaken.exportActivityId = activityTaken.activity.targetId
+            }
+
             val export :ExportEntity = ExportEntity(
                 dailyActivities = dailyActivities,
                 activitiesTaken = activitiesTaken,
@@ -65,7 +76,7 @@ object ExportUseCaseImpl : ExportUseCase {
                 waters = waters,
                 weightEntities = weightEntities
             )
-            return Json.encodeToString(export)
+            return jsonPropertiesForExport.encodeToString(export)
         } else {
             throw Exception("ExportUseCaseImpl Not init invokeExport")
         }

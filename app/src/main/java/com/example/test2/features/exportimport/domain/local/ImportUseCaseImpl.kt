@@ -120,6 +120,7 @@ object ImportUseCaseImpl : ImportUseCase {
                 Log.e("ExportDAO PILL", e.message.toString())
                 continue
             }
+
             pillsTakenByPillId[ oldId ]?.forEach { pillTaken: PillTakenEntity ->
                 pillTaken.pillEntity.targetId = newId
                 try {

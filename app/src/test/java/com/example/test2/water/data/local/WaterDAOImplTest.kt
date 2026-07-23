@@ -2,13 +2,21 @@ package com.example.test2.water.data.local
 
 import com.example.test2.TestDateFactory
 import com.example.test2.features.MyObjectBox
+import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.water.data.local.WaterEntity
 import com.example.test2.features.water.data.local.WaterDAOImpl
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -17,7 +25,7 @@ import java.time.ZoneOffset
 import kotlin.collections.forEachIndexed
 import kotlin.random.Random
 
-open class WaterTest {
+open class WaterDAOImplTest {
 
     private var _store: BoxStore? = null
     protected val store: BoxStore
@@ -74,7 +82,6 @@ open class WaterTest {
     @Test
     fun insetWeightsAndGetTheData() {
 
-
         val dates : Sequence<OffsetDateTime> =
             TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
@@ -109,16 +116,10 @@ open class WaterTest {
     @Test
     fun sparse() {
 
-        val dates : Sequence<OffsetDateTime> =
-            TestDateFactory.dailySequence(
-                2025, 10, 25, 14, 30, 0, 0,
-            )
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
-        dates.take(36)
-            .forEach { someDayAtTheMorning: OffsetDateTime ->
-                WaterDAOImpl.insert(
-                    WaterEntity(0L, someDayAtTheMorning, iterator.next())
-                )
+        TestDateFactory.buildWaters(2025, 10, 25, 14, 30, 0, 0,
+            36
+        ).forEach { we: WaterEntity ->
+                WaterDAOImpl.insert(we)
             }
 
         var allList = WaterDAOImpl.getAll()
@@ -133,6 +134,29 @@ open class WaterTest {
 
         Assert.assertEquals(1, allList.size)
 
+    }
+
+    @Test
+    fun encodeTest() {
+        TestDateFactory.buildWaters(2025, 10, 25, 14, 30, 0, 0,
+            36
+        ).forEach { we: WaterEntity ->
+            WaterDAOImpl.insert(we)
+        }
+
+        val allList : List<WaterEntity> = WaterDAOImpl.getAll()
+
+
+        val prettyJson:String = jsonPropertiesForExport.encodeToString(allList)
+
+        val jsonElement: JsonElement = Json.parseToJsonElement(prettyJson)
+
+        jsonElement.jsonArray.forEach { element: JsonElement ->
+            val obj: JsonObject = element.jsonObject
+            assertTrue(obj.containsKey("id"))
+            assertTrue(obj.containsKey("date"))
+            assertTrue(obj.containsKey("volume"))
+        }
     }
 
     companion object {

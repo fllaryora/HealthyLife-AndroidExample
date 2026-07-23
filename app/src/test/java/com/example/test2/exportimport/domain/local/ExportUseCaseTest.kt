@@ -24,7 +24,7 @@ import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -34,7 +34,7 @@ import org.junit.Test
 import java.io.File
 import java.net.URL
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
+import kotlinx.serialization.json.Json
 
 fun assertEndsWith( message: String?, expected: String?, actual:String?) {
     val actualMatch : Boolean = expected?.let { actual?.endsWith(it)?: false } ?: false
@@ -53,7 +53,6 @@ fun assertEqualsIgnoreWhiteSpace( message: String?, expected: String?, actual:St
     )
 
 }
-
 
 open class ExportUseCaseTest {
     private var _store: BoxStore? = null
@@ -145,6 +144,18 @@ open class ExportUseCaseTest {
     }
 
     @Test
+    fun check_transientvalues_exported(){
+        insertPillTaken()
+        val pillsTaken : List<PillTakenEntity> = PillTakenDAOImpl.getAll()
+        for(item: PillTakenEntity in pillsTaken) {
+            assertNotEquals( 0L,item.exportPillId )
+        }
+        val objectPP: String  = Json.encodeToString(pillsTaken)
+        println("JSON: ${objectPP}")
+        assertEquals( true,objectPP.contains("exportPillId") )
+
+    }
+    @Test
     fun inset_and_validate_data() {
 
         //Simulate the user enter data....
@@ -172,54 +183,39 @@ open class ExportUseCaseTest {
 
     private fun insertWeights() {
 
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+        TestDateFactory.buildWeights(2025, 10, 25, 14, 30, 0, 0,
+            36
+        ).forEach { we: WeightEntity ->
+            WeightDAOImpl.insert(we)
+        }
 
-        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
-            2025, 10, 25, 14, 30, 0, 0,
-        )
-
-        dates.take(36)
-            .forEach { someDayAtTheMorning: OffsetDateTime ->
-                WeightDAOImpl.insert(
-                    WeightEntity(0L, someDayAtTheMorning, iterator.next())
-                )
-            }
     }
 
     private fun insertWaters() {
 
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
-
-        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
-            2025, 10, 25, 14, 30, 0, 0,
-        )
-        dates.take(36)
-            .forEach { someDayAtTheMorning: OffsetDateTime ->
-                WaterDAOImpl.insert(
-                    WaterEntity(0L, someDayAtTheMorning, iterator.next())
-                )
-            }
+        TestDateFactory.buildWaters(2025, 10, 25, 14, 30, 0, 0,
+            36
+        ).forEach { we: WaterEntity ->
+            WaterDAOImpl.insert(we)
+        }
     }
 
     private fun insertNumberTwo() {
 
-        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
-            2025, 10, 25, 14, 30, 0, 0,
-        )
-        val days = 50
-
-        dates.take(days)
-            .forEach { someDayAtTheMorning: OffsetDateTime ->
-                NumberTwoDAOImpl.insert(
-                    NumberTwoEntity(0L, someDayAtTheMorning, )
-                )
-            }
+        TestDateFactory.buildNumberTwo(2025, 10, 25, 14, 30, 0, 0,
+            50
+        ).forEach { nt: NumberTwoEntity ->
+            NumberTwoDAOImpl.insert(nt)
+        }
     }
+
     private fun insertPillTaken() {
         val supradin: PillEntity = PillEntity(0L, "Supradin Forte")
         val totalMagneciano: PillEntity = PillEntity(0L, "Total Magneciano")
+
         PillDAOImpl.insert(supradin)
         PillDAOImpl.insert(totalMagneciano)
+
         val pillEntityList : List<PillEntity> = PillDAOImpl.getPills()
 
 

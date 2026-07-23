@@ -1,13 +1,24 @@
 package com.example.test2.pill.data.local
 
 import com.example.test2.features.MyObjectBox
+import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.pill.data.local.PillDAOImpl
 import com.example.test2.features.pill.data.local.PillEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
+import junit.framework.TestCase.assertEquals
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -78,6 +89,38 @@ open class PillEntityTest {
         allList = PillDAOImpl.getPills()
 
         Assert.assertEquals(1, allList.size)
+
+    }
+
+    @Test
+    fun encodeTest() {
+        val name1 = "Supradin Forte"
+        val supradin: PillEntity = PillEntity(0L, name1)
+        val name2 = "Total Magneciano"
+        val totalMagneciano: PillEntity = PillEntity(0L, name2)
+        PillDAOImpl.insert(supradin)
+        PillDAOImpl.insert(totalMagneciano)
+
+        val allList : List<PillEntity> = PillDAOImpl.getPills()
+
+        val prettyJson:String = jsonPropertiesForExport.encodeToString(allList)
+
+        val jsonElement = Json.parseToJsonElement(prettyJson)
+
+        assertEquals(2, jsonElement.jsonArray.size)
+
+        jsonElement.jsonArray.forEach { element: JsonElement ->
+            val currentObj: JsonObject = element.jsonObject
+            assertTrue(currentObj.containsKey("id"))
+            assertTrue(currentObj.containsKey("name"))
+            val currentName: String? = currentObj["name"]?.jsonPrimitive?.content
+            val currentId: Long? = currentObj["id"]?.jsonPrimitive?.long
+
+            when (currentId) {
+                1L -> assertEquals(name1, currentName)
+                2L -> assertEquals(name2, currentName)
+            }
+        }
 
     }
 
