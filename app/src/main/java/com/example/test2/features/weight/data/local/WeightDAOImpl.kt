@@ -24,6 +24,11 @@ object WeightDAOImpl : WeightDAO {
     }
 
     override fun insert(weightEntity: WeightEntity) : Long {
+        check(weightEntity.id == 0L) {
+            """
+        ID is higher or equal to internal ID sequence: 1 (vs. 1). Use ID 0 (zero) to insert new objects.
+        """.trimIndent()
+        }
         //return the new key
         return mWeightEntityBox.put(weightEntity)
     }

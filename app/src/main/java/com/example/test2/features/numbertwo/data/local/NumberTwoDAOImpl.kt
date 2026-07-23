@@ -21,6 +21,11 @@ object NumberTwoDAOImpl : NumberTwoDAO {
     }
 
     override fun insert(numberTwoEntity: NumberTwoEntity) : Long {
+        check(numberTwoEntity.id == 0L) {
+            """
+        ID is higher or equal to internal ID sequence: 1 (vs. 1). Use ID 0 (zero) to insert new objects.
+        """.trimIndent()
+        }
         //return the new key
         try {
             return mNumberTwoEntityBox.put(numberTwoEntity)
