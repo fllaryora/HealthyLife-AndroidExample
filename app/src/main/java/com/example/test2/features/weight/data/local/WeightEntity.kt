@@ -1,6 +1,7 @@
 package com.example.test2.features.weight.data.local
 
 import com.example.test2.data.entities.behaviors.Graphable
+import com.example.test2.data.entities.behaviors.Importable
 import com.example.test2.data.entities.behaviors.Timelineable
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
 import com.example.test2.framework.data.database.TimeConverterForObjectBox
@@ -46,7 +47,7 @@ data class WeightEntity (
     @Unique
     val date: OffsetDateTime,
     val weight: Float
-): Graphable, Timelineable {
+): Graphable, Timelineable, Importable<WeightEntity, OffsetDateTime> {
     /**
      * Returns the timestamp used as the X-axis value when plotting this
      * measurement in a graph.
@@ -67,4 +68,7 @@ data class WeightEntity (
      * with two decimal places.
      */
     override fun getLabel() = String.format(Locale.getDefault(),"%.2f", weight)
+
+    override fun prepareForImport(): WeightEntity = copy(id = 0L)
+    override fun importSortKey(): OffsetDateTime = date
 }

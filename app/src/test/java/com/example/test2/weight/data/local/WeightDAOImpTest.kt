@@ -1,6 +1,8 @@
 package com.example.test2.weight.data.local
 
 import com.example.test2.TestDateFactory
+import com.example.test2.data.entities.behaviors.prepareForImport
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.weight.data.local.WeightDAOImpl
@@ -17,10 +19,12 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.net.URL
 import kotlin.random.Random
 
 
@@ -138,6 +142,55 @@ open class WeightDAOImpTest {
             assertTrue(obj.containsKey("date"))
             assertTrue(obj.containsKey("weight"))
         }
+    }
+
+    private fun takeTheFileFromGradle() : String {
+        val expectedDataBaseFile: URL = javaClass.classLoader!!
+            .getResource("weights.json")
+
+        /*This part is a crapy part
+        because it will fail outside gradle world
+        * */
+        println(expectedDataBaseFile.file)
+        assertEndsWith(
+            "The path of the resource file",
+            "app/build/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out/weights.json",
+            expectedDataBaseFile.file
+        )
+
+
+        val databaseString = javaClass.classLoader!!
+            .getResource("weights.json")!!
+            .readText()
+
+        return databaseString
+    }
+
+    @Test
+    fun testResource() {
+
+        val importEntity :List<WeightEntity> = Json.decodeFromString<List<WeightEntity>>(takeTheFileFromGradle())
+
+        assertTrue("the resource is corrupt", importEntity.isNotEmpty())
+    }
+
+    @Test
+    fun decodeTest() {
+
+        val importEntity :List<WeightEntity> = Json.decodeFromString<List<WeightEntity>>(takeTheFileFromGradle())
+        /*
+        importEntity.sortedBy { weightEntity: WeightEntity -> weightEntity.date } //ascending
+            .map { it.prepareForImport() }.forEach { we: WeightEntity ->
+            WeightDAOImpl.insert(we)
+        }*/
+
+        importEntity.prepareForImport().forEach { we: WeightEntity ->
+            WeightDAOImpl.insert(we)
+        }
+
+        val list: List<WeightEntity> = WeightDAOImpl.getAll()
+        assertEquals(36, list.size)
+
     }
 
     companion object {
