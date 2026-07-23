@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "name": "Pesarse",
+        "hour": 8,
+        "minute": 0,
+        "daysOfWeek": 127,
+        "typeOfRecorder": 1,
+        "isAlarmEnabled": false
+    },
+    {
+        "id": 2,
+        "name": "Desayunar",
+        "hour": 9,
+        "minute": 0,
+        "daysOfWeek": 127,
+        "typeOfRecorder": 0,
+        "isAlarmEnabled": false
+    },
+    {
+        "id": 3,
+        "name": "Tomar Agua",
+        "hour": 11,
+        "minute": 0,
+        "daysOfWeek": 127,
+        "typeOfRecorder": 2,
+        "isAlarmEnabled": false
+    },
+    {
+        "id": 6,
+        "name": "Almorzar",
+        "hour": 13,
+        "minute": 0,
+        "daysOfWeek": 127,
+        "typeOfRecorder": 0,
+        "isAlarmEnabled": false
+    },
+    {
+        "id": 4,
+        "name": "Recordatorio de tomar la agaromba",
+        "hour": 16,
+        "minute": 0,
+        "daysOfWeek": 42,
+        "typeOfRecorder": 3,
+        "isAlarmEnabled": false
+    },
+    {
+        "id": 7,
+        "name": "Merendar",
+        "hour": 17,
+        "minute": 0,
+        "daysOfWeek": 127,
+        "typeOfRecorder": 0,
+        "isAlarmEnabled": false
+    },
+    {
+        "id": 8,
+        "name": "Actividad fisica",
+        "hour": 18,
+        "minute": 0,
+        "daysOfWeek": 21,
+        "typeOfRecorder": 0,
+        "isAlarmEnabled": false
+    },
+    {
+        "id": 5,
+        "name": "Cenar",
+        "hour": 21,
+        "minute": 0,
+        "daysOfWeek": 127,
+        "typeOfRecorder": 0,
+        "isAlarmEnabled": false
+    }
+]

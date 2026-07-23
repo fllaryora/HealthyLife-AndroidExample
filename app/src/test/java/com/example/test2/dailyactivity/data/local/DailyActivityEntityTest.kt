@@ -1,12 +1,16 @@
 package com.example.test2.dailyactivity.data.local
 
+import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.data.entities.enums.toMask
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
+import com.example.test2.features.weight.data.local.WeightDAOImpl
+import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.annotation.Id
@@ -27,6 +31,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.net.URL
 import kotlin.random.Random
 
 open class DailyActivityEntityTest {
@@ -250,6 +255,43 @@ open class DailyActivityEntityTest {
         }
 
     }
+
+    private fun takeTheFileFromGradle() : String {
+        val expectedDataBaseFile: URL = javaClass.classLoader!!
+            .getResource("activities.json")
+
+        /*This part is a crapy part
+        because it will fail outside gradle world
+        * */
+        println(expectedDataBaseFile.file)
+        assertEndsWith(
+            "The path of the resource file",
+            "app/build/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out/activities.json",
+            expectedDataBaseFile.file
+        )
+
+
+        val databaseString = javaClass.classLoader!!
+            .getResource("activities.json")!!
+            .readText()
+
+        return databaseString
+    }
+
+    @Test
+    fun decodeTest() {
+
+        val importEntity :List<DailyActivityEntity> = Json.decodeFromString<List<DailyActivityEntity>>(takeTheFileFromGradle())
+
+        importEntity.prepareForImport().forEach { we: DailyActivityEntity ->
+            ActivityDAOImpl.insert(we)
+        }
+
+        val list: List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
+        Assert.assertEquals(8, list.size)
+
+    }
+
 
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")

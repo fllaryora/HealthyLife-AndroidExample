@@ -1,5 +1,6 @@
 package com.example.test2.features.dailyactivity.data.local
 
+import com.example.test2.data.entities.behaviors.Importable
 import com.example.test2.data.entities.behaviors.Nameable
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
@@ -50,7 +51,7 @@ data class DailyActivityEntity (
     var daysOfWeek: Int,
     var typeOfRecorder : Int,
     var isAlarmEnabled:Boolean = false //not used anymore
-): java.io.Serializable, Nameable {
+): java.io.Serializable, Nameable, Importable<DailyActivityEntity, String> {
     /**
      *  @return It returns 0 if otherActivity is equal to this (both of type DailyActivityEntity)
      *  A negative value will be returned if otherActivity is before this.
@@ -62,4 +63,11 @@ data class DailyActivityEntity (
         return (thisDayInMinutes-otherDayInMinutes).toInt()
     }
     override fun getLabel() = name
+    override fun prepareForImport(): DailyActivityEntity {
+        return copy(id = 0L)
+    }
+
+    override fun importSortKey(): String {
+        return name
+    }
 }
