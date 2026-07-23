@@ -2,7 +2,6 @@ package com.example.test2.features.recordpill.data.local
 
 import com.example.test2.data.entities.behaviors.TodoLineable
 import com.example.test2.features.pill.data.local.PillEntity
-import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
 import com.example.test2.framework.data.database.TimeConverterForObjectBox
 import io.objectbox.BoxStore
@@ -11,7 +10,15 @@ import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 import io.objectbox.annotation.Transient
 import io.objectbox.relation.ToOne
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.time.OffsetDateTime
 
 /**
@@ -43,7 +50,7 @@ import java.time.OffsetDateTime
  */
 
 @Entity
-@Serializable
+@Serializable(with = PillTakenEntity.Companion.Serializer::class)
 data class PillTakenEntity (
     @Id
     var id: Long = 0L,///must be called id and must be a Long :(
@@ -52,7 +59,7 @@ data class PillTakenEntity (
     @Serializable(with = TimeConverterForKotlinxSerializable::class)
     val date: OffsetDateTime = OffsetDateTime.now(),
     val isTaken: Boolean = true, //always true otherwise the row would not exist
-    @Transient
+    @Transient // will not be store in database
     var exportPillId : Long = 0L, //used in export action
 ) : TodoLineable {
     //ignore
@@ -95,6 +102,119 @@ data class PillTakenEntity (
                 pillEntity.target = pillEntityAsociated
                 //used in export action
                 exportPillId = pillEntityAsociated.id
+            }
+        }
+        object Serializer : KSerializer<PillTakenEntity> {
+
+            private val dateSerializer =
+                TimeConverterForKotlinxSerializable()
+
+            override val descriptor: SerialDescriptor =
+                buildClassSerialDescriptor("PillTakenEntity") {
+                    element<Long>("id")
+                    element("date", dateSerializer.descriptor)
+                    element<Boolean>("isTaken")
+                    element<Long>("exportPillId")
+                }
+
+            override fun serialize(
+                encoder: Encoder,
+                value: PillTakenEntity
+            ) {
+                val composite = encoder.beginStructure(descriptor)
+
+                composite.encodeLongElement(
+                    descriptor,
+                    0,
+                    value.id
+                )
+
+                composite.encodeSerializableElement(
+                    descriptor,
+                    1,
+                    dateSerializer,
+                    value.date
+                )
+
+                composite.encodeBooleanElement(
+                    descriptor,
+                    2,
+                    value.isTaken
+                )
+
+                // IMPORTANT:
+                // Does NOT use value.exportPillId because after a getAll()
+                // ObjectBox reconstructs it as 0 since the field is transient.
+                // Uses the actual foreign key maintained by ObjectBox instead.
+                composite.encodeLongElement(
+                    descriptor,
+                    3,
+                    value.pillEntity.targetId
+                )
+
+                composite.endStructure(descriptor)
+            }
+
+            override fun deserialize(
+                decoder: Decoder
+            ): PillTakenEntity {
+
+                val composite =
+                    decoder.beginStructure(descriptor)
+
+                var id = 0L
+                var date = OffsetDateTime.now()
+                var isTaken = true
+                var exportPillId = 0L
+
+                loop@ while (true) {
+                    when (
+                        composite.decodeElementIndex(descriptor)
+                    ) {
+                        CompositeDecoder.DECODE_DONE ->
+                            break@loop
+
+                        0 ->
+                            id = composite.decodeLongElement(
+                                descriptor,
+                                0
+                            )
+
+                        1 ->
+                            date = composite.decodeSerializableElement(
+                                descriptor,
+                                1,
+                                dateSerializer
+                            )
+
+                        2 ->
+                            isTaken = composite.decodeBooleanElement(
+                                descriptor,
+                                2
+                            )
+
+                        3 ->
+                            exportPillId =
+                                composite.decodeLongElement(
+                                    descriptor,
+                                    3
+                                )
+
+                        else ->
+                            throw SerializationException(
+                                "Unexpected index"
+                            )
+                    }
+                }
+
+                composite.endStructure(descriptor)
+
+                return PillTakenEntity(
+                    id = id,
+                    date = date,
+                    isTaken = isTaken,
+                    exportPillId = exportPillId
+                )
             }
         }
     }

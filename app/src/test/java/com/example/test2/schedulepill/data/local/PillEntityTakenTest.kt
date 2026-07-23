@@ -3,6 +3,7 @@ package com.example.test2.schedulepill.data.local
 import com.example.test2.TestDateFactory
 import com.example.test2.data.converter.TimeConverter
 import com.example.test2.features.MyObjectBox
+import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.pill.data.local.PillDAOImpl
 import com.example.test2.features.pill.data.local.PillEntity
 import com.example.test2.features.recordpill.data.local.PillTakenDAOImpl
@@ -10,8 +11,18 @@ import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
+import junit.framework.TestCase.assertEquals
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -185,6 +196,62 @@ open class PillEntityTakenTest {
             Assert.assertEquals(firstTake, allTakenPillLimitedPairSecond.second)
         }
 
+
+    }
+
+    @Test
+    fun encodeTest() {
+        val name1 = "Supradin Forte"
+        val supradin: PillEntity = PillEntity(0L, name1)
+        val name2 = "Total Magneciano"
+        val totalMagneciano: PillEntity = PillEntity(0L, name2)
+        PillDAOImpl.insert(supradin)
+        PillDAOImpl.insert(totalMagneciano)
+
+        val pillEntityList : List<PillEntity> = PillDAOImpl.getPills()
+        assertEquals(2, pillEntityList.size)
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0,
+        )
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                pillEntityList.forEach { pillEntity : PillEntity ->
+                    val pillTakenEntity = PillTakenEntity.create(pillEntityAsociated = pillEntity, date = someDayAtTheMorning, )
+
+                    PillTakenDAOImpl.insert(
+                        pillTakenEntity
+                    )
+                }
+            }
+
+        val allList : List<PillTakenEntity> = PillTakenDAOImpl.getAll()
+        assertEquals(2*36, allList.size)
+
+        val prettyJson:String = jsonPropertiesForExport.encodeToString(allList)
+
+        print(prettyJson)
+
+        val jsonElement = Json.parseToJsonElement(prettyJson)
+
+        assertEquals(2*36, jsonElement.jsonArray.size)
+
+        jsonElement.jsonArray.forEach { element: JsonElement ->
+            val currentObj: JsonObject = element.jsonObject
+            assertTrue(currentObj.containsKey("id"))
+            assertTrue(currentObj.containsKey("date"))
+            assertTrue(currentObj.containsKey("isTaken"))
+            assertTrue(currentObj.containsKey("exportPillId")) // falla aca
+
+            /*
+             val currentName: String? = currentObj["name"]?.jsonPrimitive?.content
+             val currentId: Long? = currentObj["id"]?.jsonPrimitive?.long
+
+             when (currentId) {
+                 1L -> assertEquals(name1, currentName)
+                 2L -> assertEquals(name2, currentName)
+             }*/
+        }
 
     }
 
