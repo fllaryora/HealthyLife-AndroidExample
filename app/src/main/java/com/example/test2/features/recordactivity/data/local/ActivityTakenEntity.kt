@@ -3,7 +3,6 @@ package com.example.test2.features.recordactivity.data.local
 import com.example.test2.data.entities.behaviors.Graphable
 import com.example.test2.data.entities.behaviors.TodoLineable
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
 import com.example.test2.framework.data.database.TimeConverterForObjectBox
 import io.objectbox.BoxStore
@@ -11,7 +10,15 @@ import io.objectbox.annotation.Convert
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 import io.objectbox.relation.ToOne
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.time.OffsetDateTime
 
 /**
@@ -45,8 +52,9 @@ import java.time.OffsetDateTime
  * @see com.example.test2.data.entities.behaviors.Graphable
  */
 
-@Serializable
+
 @Entity
+@Serializable(with = ActivityTakenEntity.Companion.Serializer::class)
 data class ActivityTakenEntity (
     @Id
     var id: Long = 0L,///must be called id and must be a Long :(
@@ -56,8 +64,7 @@ data class ActivityTakenEntity (
     val date: OffsetDateTime = OffsetDateTime.now(),
     val rating: Int = 0,
     val isTaken: Boolean = true, //always true otherwise the row would not exist
-    @Transient
-    @kotlinx.serialization.Transient
+    @Transient // will not be store in database
     var exportActivityId : Long = 0L, //used in export action
 ) : TodoLineable, Graphable {
 
@@ -117,6 +124,135 @@ data class ActivityTakenEntity (
                 activity.target = activityEntityAsociated
                 //used in export action
                 exportActivityId = activityEntityAsociated.id
+            }
+        }
+        object Serializer : KSerializer<ActivityTakenEntity> {
+
+            private val dateSerializer =
+                TimeConverterForKotlinxSerializable()
+
+            override val descriptor: SerialDescriptor =
+                buildClassSerialDescriptor("ActivityTakenEntity") {
+                    element<Long>("id")
+                    element("date", dateSerializer.descriptor)
+                    element<Int>("rating")
+                    element<Boolean>("isTaken")
+                    element<Long>("exportActivityId")
+                }
+
+            override fun serialize(
+                encoder: Encoder,
+                value: ActivityTakenEntity
+            ) {
+                val composite = encoder.beginStructure(descriptor)
+
+                composite.encodeLongElement(
+                    descriptor,
+                    0,
+                    value.id
+                )
+
+                composite.encodeSerializableElement(
+                    descriptor,
+                    1,
+                    dateSerializer,
+                    value.date
+                )
+
+                composite.encodeIntElement(
+                    descriptor,
+                    2,
+                    value.rating
+                )
+
+                composite.encodeBooleanElement(
+                    descriptor,
+                    3,
+                    value.isTaken
+                )
+
+                // IMPORTANT:
+                // exportActivityId is transient and therefore is not persisted by
+                // ObjectBox. After loading the entity with getAll(), its value is
+                // reconstructed as 0. For export purposes, use activity.targetId,
+                // which contains the actual foreign key managed by ObjectBox.
+                composite.encodeLongElement(
+                    descriptor,
+                    4,
+                    value.activity.targetId
+                )
+
+                composite.endStructure(descriptor)
+            }
+
+            override fun deserialize(
+                decoder: Decoder
+            ): ActivityTakenEntity {
+
+                val composite =
+                    decoder.beginStructure(descriptor)
+
+                var id = 0L
+                var date = OffsetDateTime.now()
+                var rating = 0
+                var isTaken = true
+                var exportActivityId = 0L
+
+                loop@ while (true) {
+                    when (
+                        composite.decodeElementIndex(descriptor)
+                    ) {
+                        CompositeDecoder.DECODE_DONE ->
+                            break@loop
+
+                        0 ->
+                            id = composite.decodeLongElement(
+                                descriptor,
+                                0
+                            )
+
+                        1 ->
+                            date = composite.decodeSerializableElement(
+                                descriptor,
+                                1,
+                                dateSerializer
+                            )
+
+                        2 ->
+                            rating = composite.decodeIntElement(
+                                descriptor,
+                                2
+                            )
+
+                        3 ->
+                            isTaken = composite.decodeBooleanElement(
+                                descriptor,
+                                3
+                            )
+
+                        4 ->
+                            exportActivityId =
+                                composite.decodeLongElement(
+                                    descriptor,
+                                    4
+                                )
+
+                        else ->
+                            throw SerializationException(
+                                "Unexpected index"
+                            )
+                    }
+                }
+
+                composite.endStructure(descriptor)
+
+                return ActivityTakenEntity(
+                    id = id,
+                    date = date,
+                    rating = rating,
+                    isTaken = isTaken,
+                    exportActivityId = exportActivityId
+                )
             }
         }
     }
