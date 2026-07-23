@@ -1,6 +1,8 @@
 package com.example.test2.water.data.local
 
 import com.example.test2.TestDateFactory
+import com.example.test2.data.entities.behaviors.prepareForImport
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.water.data.local.WaterEntity
@@ -16,10 +18,12 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.net.URL
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlin.collections.forEachIndexed
@@ -159,6 +163,41 @@ open class WaterDAOImplTest {
         }
     }
 
+    private fun takeTheFileFromGradle() : String {
+        val expectedDataBaseFile: URL = javaClass.classLoader!!
+            .getResource("waters.json")
+
+        /*This part is a crapy part
+        because it will fail outside gradle world
+        * */
+        println(expectedDataBaseFile.file)
+        assertEndsWith(
+            "The path of the resource file",
+            "app/build/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out/waters.json",
+            expectedDataBaseFile.file
+        )
+
+
+        val databaseString = javaClass.classLoader!!
+            .getResource("waters.json")!!
+            .readText()
+
+        return databaseString
+    }
+
+    @Test
+    fun decodeTest() {
+
+        val importEntity :List<WaterEntity> = Json.decodeFromString<List<WaterEntity>>(takeTheFileFromGradle())
+
+        importEntity.prepareForImport().forEach { we: WaterEntity ->
+            WaterDAOImpl.insert(we)
+        }
+
+        val list: List<WaterEntity> = WaterDAOImpl.getAll()
+        assertEquals(36, list.size)
+
+    }
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")
     }

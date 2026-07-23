@@ -178,11 +178,6 @@ open class WeightDAOImpTest {
     fun decodeTest() {
 
         val importEntity :List<WeightEntity> = Json.decodeFromString<List<WeightEntity>>(takeTheFileFromGradle())
-        /*
-        importEntity.sortedBy { weightEntity: WeightEntity -> weightEntity.date } //ascending
-            .map { it.prepareForImport() }.forEach { we: WeightEntity ->
-            WeightDAOImpl.insert(we)
-        }*/
 
         importEntity.prepareForImport().forEach { we: WeightEntity ->
             WeightDAOImpl.insert(we)

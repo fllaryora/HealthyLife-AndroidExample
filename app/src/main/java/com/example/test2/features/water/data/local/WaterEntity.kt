@@ -1,6 +1,7 @@
 package com.example.test2.features.water.data.local
 
 import com.example.test2.data.entities.behaviors.Graphable
+import com.example.test2.data.entities.behaviors.Importable
 import com.example.test2.data.entities.behaviors.Timelineable
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
 import com.example.test2.framework.data.database.TimeConverterForObjectBox
@@ -46,7 +47,7 @@ import java.util.Locale
         @Unique
         val date: OffsetDateTime,
         val volume: Float
-    ): Graphable, Timelineable {
+    ): Graphable, Timelineable, Importable<WaterEntity, OffsetDateTime>{
 
     /**
      * Returns the timestamp used as the X-axis value when plotting this
@@ -73,4 +74,6 @@ import java.util.Locale
      */
 
     override fun getLabel() = String.format(Locale.getDefault(),"%.2f", volume)
+    override fun prepareForImport(): WaterEntity = copy(id = 0L)
+    override fun importSortKey(): OffsetDateTime = date
     }
