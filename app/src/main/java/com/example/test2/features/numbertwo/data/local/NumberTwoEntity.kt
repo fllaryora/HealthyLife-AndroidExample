@@ -1,5 +1,6 @@
 package com.example.test2.features.numbertwo.data.local
 
+import com.example.test2.data.entities.behaviors.Importable
 import com.example.test2.data.entities.behaviors.TodoLineable
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
 import com.example.test2.framework.data.database.TimeConverterForObjectBox
@@ -21,9 +22,16 @@ data class NumberTwoEntity (
     @Unique
     val date: OffsetDateTime = OffsetDateTime.now(),
     val isTaken: Boolean = true //always true otherwise the row would not exist
-) : TodoLineable {
+) : TodoLineable, Importable<NumberTwoEntity, OffsetDateTime> {
     override fun getTime() = date
     override fun getRatingT() = if(isTaken) 10 else 0
     override fun getShowRating() = false
     override fun isTakenT() = isTaken
+    override fun prepareForImport(): NumberTwoEntity {
+        return copy( id= 0L)
+    }
+
+    override fun importSortKey(): OffsetDateTime {
+        return date
+    }
 }

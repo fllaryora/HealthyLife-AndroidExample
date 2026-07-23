@@ -1,10 +1,14 @@
 package com.example.test2.numbertwo.data.local
 
 import com.example.test2.TestDateFactory
+import com.example.test2.data.entities.behaviors.prepareForImport
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
+import com.example.test2.features.water.data.local.WaterDAOImpl
+import com.example.test2.features.water.data.local.WaterEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
@@ -16,10 +20,12 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.net.URL
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlin.random.Random
@@ -143,6 +149,43 @@ open class NumberTwoEntityTest {
             assertTrue(obj.containsKey("date"))
             assertTrue(obj.containsKey("isTaken"))
         }
+    }
+
+    private fun takeTheFileFromGradle() : String {
+        val expectedDataBaseFile: URL = javaClass.classLoader!!
+            .getResource("numbertwo.json")
+
+        /*This part is a crapy part
+        because it will fail outside gradle world
+        * */
+        println(expectedDataBaseFile.file)
+        assertEndsWith(
+            "The path of the resource file",
+            "app/build/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out/numbertwo.json",
+            expectedDataBaseFile.file
+        )
+
+
+        val databaseString = javaClass.classLoader!!
+            .getResource("numbertwo.json")!!
+            .readText()
+
+        return databaseString
+    }
+
+
+    @Test
+    fun decodeTest() {
+
+        val importEntity :List<NumberTwoEntity> = Json.decodeFromString<List<NumberTwoEntity>>(takeTheFileFromGradle())
+
+        importEntity.prepareForImport().forEach { we: NumberTwoEntity ->
+            NumberTwoDAOImpl.insert(we)
+        }
+
+        val list: List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
+        assertEquals(50, list.size)
+
     }
 
     companion object {
