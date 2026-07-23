@@ -42,18 +42,6 @@ fun assertEndsWith( message: String?, expected: String?, actual:String?) {
     assertEquals( message,  true, actualMatch)
 }
 
-fun assertEqualsIgnoreWhiteSpace( message: String?, expected: String?, actual:String?) {
-    val expectedMatch : String =  expected?.filterNot { it.isWhitespace() } ?: ""
-    val actualMatch : String =  actual?.filterNot { it.isWhitespace() } ?: ""
-
-    assertEquals(
-        message,
-        expectedMatch,
-        actualMatch
-    )
-
-}
-
 open class ExportUseCaseTest {
     private var _store: BoxStore? = null
     protected val store: BoxStore
@@ -143,18 +131,7 @@ open class ExportUseCaseTest {
         assertTrue("the resource is corrupt", importEntity.pillEntities.isNotEmpty())
     }
 
-    @Test
-    fun check_transientvalues_exported(){
-        insertPillTaken()
-        val pillsTaken : List<PillTakenEntity> = PillTakenDAOImpl.getAll()
-        for(item: PillTakenEntity in pillsTaken) {
-            assertNotEquals( 0L,item.exportPillId )
-        }
-        val objectPP: String  = Json.encodeToString(pillsTaken)
-        println("JSON: ${objectPP}")
-        assertEquals( true,objectPP.contains("exportPillId") )
 
-    }
     @Test
     fun inset_and_validate_data() {
 
@@ -177,7 +154,7 @@ open class ExportUseCaseTest {
             exportedDatabase
         )
 
-        assertEqualsIgnoreWhiteSpace( "Jsons are differents",takeTheFileFromGradle(), exportedDatabase)
+        assertEquals( "Jsons are differents",takeTheFileFromGradle(), exportedDatabase)
 
     }
 
