@@ -24,7 +24,6 @@ import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
-import kotlinx.serialization.encodeToString
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -35,6 +34,10 @@ import java.io.File
 import java.net.URL
 import java.time.OffsetDateTime
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 fun assertEndsWith( message: String?, expected: String?, actual:String?) {
     val actualMatch : Boolean = expected?.let { actual?.endsWith(it)?: false } ?: false
@@ -153,6 +156,18 @@ open class ExportUseCaseTest {
             "",
             exportedDatabase
         )
+        val jsonElement: JsonElement = Json.parseToJsonElement(exportedDatabase)
+
+        jsonElement.jsonObject.let { element: JsonObject ->
+            assertTrue(element.containsKey("dailyActivities"))
+            assertTrue(element.containsKey("activitiesTaken"))
+            assertTrue(element.containsKey("numberTwoEntities"))
+            assertTrue(element.containsKey("pillEntities"))
+            assertTrue(element.containsKey("pillsTaken"))
+            assertTrue(element.containsKey("waters"))
+            assertTrue(element.containsKey("weightEntities"))
+
+        }
 
         assertEquals( "Jsons are differents",takeTheFileFromGradle(), exportedDatabase)
 
