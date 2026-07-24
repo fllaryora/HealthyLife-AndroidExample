@@ -1,14 +1,14 @@
-package com.example.test2.exportimport.domain.local
-
+package com.example.test2.exportimport.domain.repository
 import com.example.test2.TestDateFactory
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.data.entities.enums.toMask
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.exportimport.data.local.ExportEntity
 import com.example.test2.features.exportimport.domain.local.ExportUseCaseImpl
+import com.example.test2.features.exportimport.domain.repository.ExportUseCaseRepositoryImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import com.example.test2.features.pill.data.local.PillDAOImpl
@@ -24,27 +24,27 @@ import com.example.test2.features.weight.data.local.WeightEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
+import kotlinx.serialization.json.Json
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.net.URL
-import java.time.OffsetDateTime
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
+import java.time.OffsetDateTime
 
-fun assertEndsWith( message: String?, expected: String?, actual:String?) {
-    val actualMatch : Boolean = expected?.let { actual?.endsWith(it)?: false } ?: false
 
-    assertEquals( message,  true, actualMatch)
-}
-
-open class ExportUseCaseTest {
+open class ExportUseCaseRepositoryImplTest {
     private var _store: BoxStore? = null
     protected val store: BoxStore
         get() = _store!!
@@ -52,6 +52,18 @@ open class ExportUseCaseTest {
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")
     }
+
+    val testScheduler = TestCoroutineScheduler()
+    val testDispatcher = StandardTestDispatcher(testScheduler)
+    val testScope = TestScope(testDispatcher)
+
+    lateinit var mWeightEntityBox: Box<WeightEntity>
+    lateinit var mWaterBox: Box<WaterEntity>
+    lateinit var mNumberTwoEntityBox: Box<NumberTwoEntity>
+    lateinit var mPillEntityBox: Box<PillEntity>
+    lateinit var mActivityBox : Box<DailyActivityEntity>
+    lateinit var mPillTakenEntityBox: Box<PillTakenEntity>
+    lateinit var mActivityTakenEntityBox: Box<ActivityTakenEntity>
 
     @Before
     fun setUp() {
@@ -65,25 +77,21 @@ open class ExportUseCaseTest {
             .debugFlags(DebugFlags.LOG_QUERIES or DebugFlags.LOG_QUERY_PARAMETERS)
             .build()
 
-        val mWeightEntityBox: Box<WeightEntity> = store.boxFor(WeightEntity::class.java)
+
+        mWeightEntityBox = store.boxFor(WeightEntity::class.java)
+        mWaterBox = store.boxFor(WaterEntity::class.java)
+        mNumberTwoEntityBox = store.boxFor(NumberTwoEntity::class.java)
+        mPillEntityBox = store.boxFor(PillEntity::class.java)
+        mActivityBox = store.boxFor(DailyActivityEntity::class.java)
+        mPillTakenEntityBox = store.boxFor(PillTakenEntity::class.java)
+        mActivityTakenEntityBox  = store.boxFor(ActivityTakenEntity::class.java)
+
         WeightDAOImpl.initialize(mWeightEntityBox)
-
-        val mWaterBox: Box<WaterEntity> = store.boxFor(WaterEntity::class.java)
         WaterDAOImpl.initialize(mWaterBox)
-
-        val mNumberTwoEntityBox: Box<NumberTwoEntity> = store.boxFor(NumberTwoEntity::class.java)
         NumberTwoDAOImpl.initialize(mNumberTwoEntityBox)
-
-        val mPillEntityBox: Box<PillEntity> = store.boxFor(PillEntity::class.java)
         PillDAOImpl.initialize(mPillEntityBox)
-
-        val mActivityBox : Box<DailyActivityEntity> = store.boxFor(DailyActivityEntity::class.java)
         ActivityDAOImpl.initialize(mActivityBox)
-
-        val mPillTakenEntityBox: Box<PillTakenEntity> = store.boxFor(PillTakenEntity::class.java)
         PillTakenDAOImpl.initialize(mPillTakenEntityBox)
-
-        val mActivityTakenEntityBox: Box<ActivityTakenEntity>  = store.boxFor(ActivityTakenEntity::class.java)
         ActivityTakenDAOImpl.initialize(mActivityTakenEntityBox)
 
         ExportUseCaseImpl.initialize(
@@ -94,6 +102,8 @@ open class ExportUseCaseTest {
             activityDAO = ActivityDAOImpl,
             pillTakenDAO = PillTakenDAOImpl,
             activityTakenDAO = ActivityTakenDAOImpl)
+
+        ExportUseCaseRepositoryImpl.initialize(ExportUseCaseImpl, testDispatcher )
     }
 
     @After
@@ -117,7 +127,6 @@ open class ExportUseCaseTest {
             expectedDataBaseFile.file
         )
 
-
         val databaseString = javaClass.classLoader!!
             .getResource("expectedDataBase.json")!!
             .readText()
@@ -125,18 +134,10 @@ open class ExportUseCaseTest {
         return databaseString
     }
 
-    @Test
-    fun testResource() {
-
-        val importEntity :ExportEntity = Json.decodeFromString<ExportEntity>(takeTheFileFromGradle())
-
-        assertTrue("the resource is corrupt", importEntity.pillEntities.isNotEmpty())
-    }
-
 
     @Test
-    fun inset_and_validate_data() {
-
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun inset_and_validate_data() = testScope.runTest {
         //Simulate the user enter data....
         insertWeights()
         insertWaters()
@@ -144,7 +145,7 @@ open class ExportUseCaseTest {
         insertPillTaken()
         insertActivityTaken()
 
-        val exportedDatabase : String = ExportUseCaseImpl.invokeExport()
+        val exportedDatabase = ExportUseCaseRepositoryImpl.invokeExport()
 
         assertNotEquals(
             null,
@@ -169,8 +170,8 @@ open class ExportUseCaseTest {
         }
 
         assertEquals( "Jsons are differents",takeTheFileFromGradle(), exportedDatabase)
-
     }
+
 
     private fun insertWeights() {
 
@@ -300,5 +301,6 @@ open class ExportUseCaseTest {
                 }
             }
     }
+
 }
 
