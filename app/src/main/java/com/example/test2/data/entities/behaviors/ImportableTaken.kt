@@ -1,5 +1,7 @@
 package com.example.test2.data.entities.behaviors
 
+import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
+
 interface ImportableTaken<
         IMPORTABLE_TAKEN,
         OWNER,
@@ -7,6 +9,19 @@ interface ImportableTaken<
         > where OWNER : Importable<OWNER, COMPARABLE> {
 
     fun prepareForImport(owner: OWNER): IMPORTABLE_TAKEN
+    fun getOwnerId(): Long
+
+}
+
+fun < IMPORTABLE_TAKEN, OWNER, COMPARABLE : Comparable<COMPARABLE>>
+        List<IMPORTABLE_TAKEN>.groupByOwnerId(): Map<Long, List<IMPORTABLE_TAKEN>>
+        where OWNER: Importable<OWNER, COMPARABLE>,
+              IMPORTABLE_TAKEN: ImportableTaken< IMPORTABLE_TAKEN, OWNER, COMPARABLE> {
+    val takenGroupedByImportable : Map <Long, List<IMPORTABLE_TAKEN>> =
+        this.groupBy { importableTakenEntity : IMPORTABLE_TAKEN ->
+            importableTakenEntity.getOwnerId()
+        }
+    return takenGroupedByImportable
 }
 
 /**
@@ -43,7 +58,8 @@ interface ImportableTaken<
  * cannot be resolved.
  */
 fun < IMPORTABLE_TAKEN, OWNER, COMPARABLE : Comparable<COMPARABLE>>
-        Map<Long, List<IMPORTABLE_TAKEN>>.importTakenEntitiesResolvingOwners( importedOwnersByOldId: Map<Long, OWNER>,
+        Map<Long, List<IMPORTABLE_TAKEN>>.importTakenEntitiesResolvingOwners(
+        importedOwnersByOldId: Map<Long, OWNER>,
         insert: (entity: IMPORTABLE_TAKEN) -> Unit
 )
     where OWNER: Importable<OWNER, COMPARABLE>,

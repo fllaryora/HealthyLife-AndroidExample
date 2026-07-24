@@ -1,6 +1,7 @@
 package com.example.test2.scheduleactivity.data.local
 
 import com.example.test2.TestDateFactory
+import com.example.test2.data.entities.behaviors.groupByOwnerId
 import com.example.test2.data.entities.behaviors.importAndGetComparableIDsMap
 import com.example.test2.data.entities.behaviors.importTakenEntitiesResolvingOwners
 import com.example.test2.data.entities.behaviors.prepareForImport
@@ -411,9 +412,7 @@ open class ActivityTakenEntityTest {
         // Arrange
         // 2. Group All ActivityTakenEntity in the list by exportActivityId
         val takenGroupedByActivity : Map <Long, List<ActivityTakenEntity>> =
-            importTakenEntity.groupBy { activityTakenEntity : ActivityTakenEntity->
-                activityTakenEntity.exportActivityId
-            }
+            importTakenEntity.groupByOwnerId()
 
         // 3. Insert ActivityTakenEntity using  DailyActivityEntity
         // DailyActivityEntity has already persisted
