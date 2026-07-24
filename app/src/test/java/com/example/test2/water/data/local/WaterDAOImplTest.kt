@@ -39,12 +39,6 @@ open class WaterDAOImplTest {
         return Random(System.nanoTime()).nextInt(from = from, until = until)
     }
 
-    private fun rand(): Float {
-        return Random(System.nanoTime()).nextDouble(70.0, 180.0).toFloat()
-    }
-
-
-
     @Before
     fun setUp() {
         // Delete any files in the test directory before each test to start with a clean database.

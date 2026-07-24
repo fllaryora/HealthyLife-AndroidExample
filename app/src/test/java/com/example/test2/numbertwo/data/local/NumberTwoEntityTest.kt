@@ -134,7 +134,7 @@ open class NumberTwoEntityTest {
                     NumberTwoEntity(0L, someDayAtTheMorning, )
                 )
             }
-        var allList: List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
+        val allList: List<NumberTwoEntity> = NumberTwoDAOImpl.getAll()
 
         val prettyJson:String = jsonPropertiesForExport.encodeToString(allList)
 
