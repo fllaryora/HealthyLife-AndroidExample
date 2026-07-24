@@ -1,6 +1,7 @@
 package com.example.test2.data.entities.behaviors
 
 import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
+import kotlin.Long
 
 interface ImportableTaken<
         IMPORTABLE_TAKEN,
@@ -77,4 +78,16 @@ fun < IMPORTABLE_TAKEN, OWNER, COMPARABLE : Comparable<COMPARABLE>>
     }
 }
 
+
+fun < IMPORTABLE_TAKEN, OWNER, COMPARABLE : Comparable<COMPARABLE>>
+        List<IMPORTABLE_TAKEN>.groupAndImportResolvingOwners(
+    importedOwnersByOldId: Map<Long, OWNER>,
+    insert: (entity: IMPORTABLE_TAKEN) -> Unit
+): Unit
+    where OWNER: Importable<OWNER, COMPARABLE>,
+          IMPORTABLE_TAKEN: ImportableTaken< IMPORTABLE_TAKEN, OWNER, COMPARABLE> {
+
+    val takenGroupedByImportable : Map <Long, List<IMPORTABLE_TAKEN>> = this.groupByOwnerId()
+    takenGroupedByImportable.importTakenEntitiesResolvingOwners( importedOwnersByOldId, insert)
+}
 
