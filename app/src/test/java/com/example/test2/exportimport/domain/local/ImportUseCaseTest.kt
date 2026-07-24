@@ -7,8 +7,8 @@ import com.example.test2.data.entities.enums.toMask
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.exportimport.data.local.ExportEntity
-import com.example.test2.features.exportimport.domain.local.ImportUseCaseImpl
+import com.example.test2.features.export.data.local.ExportEntity
+import com.example.test2.features.importer.domain.local.ImportUseCaseImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import com.example.test2.features.pill.data.local.PillDAOImpl
@@ -27,7 +27,6 @@ import io.objectbox.config.DebugFlags
 import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

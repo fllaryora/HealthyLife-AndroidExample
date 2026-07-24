@@ -3,8 +3,8 @@ import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.exportimport.data.local.ExportEntity
-import com.example.test2.features.exportimport.domain.local.ImportUseCaseImpl
+import com.example.test2.features.export.data.local.ExportEntity
+import com.example.test2.features.importer.domain.local.ImportUseCaseImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import com.example.test2.features.pill.data.local.PillDAOImpl
@@ -27,7 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.net.URL
-import com.example.test2.features.exportimport.domain.repository.ImportUseCaseRepositoryImpl
+import com.example.test2.features.importer.domain.repository.ImportUseCaseRepositoryImpl
 import io.objectbox.kotlin.flow
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi

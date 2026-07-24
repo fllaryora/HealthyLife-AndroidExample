@@ -4,7 +4,7 @@ import com.example.test2.TestDateFactory
 import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
-import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
+import com.example.test2.features.export.domain.local.jsonPropertiesForExport
 import com.example.test2.features.weight.data.local.WeightDAOImpl
 
 import com.example.test2.features.weight.data.local.WeightEntity

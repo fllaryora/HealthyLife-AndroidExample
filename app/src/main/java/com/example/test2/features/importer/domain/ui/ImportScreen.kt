@@ -1,4 +1,4 @@
-package com.example.test2.features.exportimport.ui
+package com.example.test2.features.importer.domain.ui
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,24 +14,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.example.test2.features.exportimport.ui.viewmodel.ExportViewModel
+import com.example.test2.features.importer.domain.ui.viewmodel.ImportViewModel
 
 @Composable
-fun ExportScreen(
-    viewModel: ExportViewModel,
+fun ImportScreen(
+    viewModel: ImportViewModel,
     modifier: Modifier = Modifier
 ) {
 
     val loading by viewModel.loading.collectAsState()
     val context = LocalContext.current
 
-    val createDocumentLauncher =
+    val openDocumentLauncher =
         rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.CreateDocument("application/json")
+            contract = ActivityResultContracts.OpenDocument()
         ) { uri: Uri? ->
 
             uri?.let {
-                viewModel.exportToFile(
+                viewModel.importAction(
                     context = context,
                     uri = it
                 )
@@ -52,18 +52,13 @@ fun ExportScreen(
 
         Button(
             onClick = {
-                createDocumentLauncher.launch("backup.json")
+                openDocumentLauncher.launch(
+                    arrayOf("application/json")
+                )
             }
         ) {
-            Text("Share File")
+            Text("Read from File system")
         }
 
-        Button(
-            onClick = {
-                viewModel.exportAndShare(context)
-            }
-        ) {
-            Text("Share (WhatsApp)")
-        }
     }
 }

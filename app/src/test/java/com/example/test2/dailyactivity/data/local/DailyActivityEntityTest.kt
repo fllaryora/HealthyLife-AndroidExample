@@ -8,13 +8,9 @@ import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
-import com.example.test2.features.weight.data.local.WeightDAOImpl
-import com.example.test2.features.weight.data.local.WeightEntity
+import com.example.test2.features.export.domain.local.jsonPropertiesForExport
 import io.objectbox.Box
 import io.objectbox.BoxStore
-import io.objectbox.annotation.Id
-import io.objectbox.annotation.Unique
 import io.objectbox.config.DebugFlags
 import junit.framework.TestCase.assertEquals
 import kotlinx.serialization.encodeToString

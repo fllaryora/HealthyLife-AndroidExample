@@ -2,10 +2,7 @@ package com.example.test2.scheduleactivity.data.local
 
 import com.example.test2.TestDateFactory
 import com.example.test2.data.entities.behaviors.groupAndImportResolvingOwners
-import com.example.test2.data.entities.behaviors.groupByOwnerId
 import com.example.test2.data.entities.behaviors.importAndGetComparableIDsMap
-import com.example.test2.data.entities.behaviors.importTakenEntitiesResolvingOwners
-import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.data.entities.enums.toMask
@@ -13,7 +10,7 @@ import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
+import com.example.test2.features.export.domain.local.jsonPropertiesForExport
 import com.example.test2.features.recordactivity.data.local.ActivityTakenDAOImpl
 import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
 import io.objectbox.Box
@@ -37,8 +34,6 @@ import org.junit.Test
 import java.io.File
 import java.net.URL
 import java.time.OffsetDateTime
-import kotlin.collections.get
-import kotlin.text.set
 
 open class ActivityTakenEntityTest {
 

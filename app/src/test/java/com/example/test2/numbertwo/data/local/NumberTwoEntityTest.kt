@@ -4,11 +4,9 @@ import com.example.test2.TestDateFactory
 import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
-import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
+import com.example.test2.features.export.domain.local.jsonPropertiesForExport
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
-import com.example.test2.features.water.data.local.WaterDAOImpl
-import com.example.test2.features.water.data.local.WaterEntity
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import io.objectbox.config.DebugFlags
@@ -27,7 +25,6 @@ import org.junit.Test
 import java.io.File
 import java.net.URL
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import kotlin.random.Random
 
 open class NumberTwoEntityTest {

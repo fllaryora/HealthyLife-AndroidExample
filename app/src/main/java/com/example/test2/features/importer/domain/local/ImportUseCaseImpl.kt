@@ -1,4 +1,4 @@
-package com.example.test2.features.exportimport.domain.local
+package com.example.test2.features.importer.domain.local
 
 //import android.util.Log
 
@@ -7,7 +7,7 @@ import com.example.test2.data.entities.behaviors.importAndGetComparableIDsMap
 import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.features.dailyactivity.data.local.ActivityDAO
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.exportimport.data.local.ExportEntity
+import com.example.test2.features.export.data.local.ExportEntity
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAO
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import com.example.test2.features.pill.data.local.PillDAO

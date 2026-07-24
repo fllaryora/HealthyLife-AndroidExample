@@ -4,10 +4,9 @@ import com.example.test2.TestDateFactory
 import com.example.test2.data.converter.TimeConverter
 import com.example.test2.data.entities.behaviors.groupAndImportResolvingOwners
 import com.example.test2.data.entities.behaviors.importAndGetComparableIDsMap
-import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
-import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
+import com.example.test2.features.export.domain.local.jsonPropertiesForExport
 import com.example.test2.features.pill.data.local.PillDAOImpl
 import com.example.test2.features.pill.data.local.PillEntity
 import com.example.test2.features.recordpill.data.local.PillTakenDAOImpl
@@ -22,8 +21,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertTrue
@@ -32,7 +29,6 @@ import org.junit.Test
 import java.io.File
 import java.net.URL
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import kotlin.random.Random
 
 open class PillEntityTakenTest {

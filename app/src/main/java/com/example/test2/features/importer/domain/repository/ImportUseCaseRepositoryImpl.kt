@@ -1,6 +1,6 @@
-package com.example.test2.features.exportimport.domain.repository
+package com.example.test2.features.importer.domain.repository
 
-import com.example.test2.features.exportimport.domain.local.ImportUseCase
+import com.example.test2.features.importer.domain.local.ImportUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 

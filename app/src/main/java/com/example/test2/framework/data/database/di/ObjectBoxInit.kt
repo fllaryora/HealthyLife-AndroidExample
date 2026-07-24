@@ -6,10 +6,10 @@ import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.dailyactivity.data.repository.ActivityRepositoryImpl
 import com.example.test2.features.dailyactivity.domain.ActivityUseCaseImpl
 import com.example.test2.features.dailyactivity.domain.repository.ActivityUseCaseRepositoryImpl
-import com.example.test2.features.exportimport.domain.local.ExportUseCaseImpl
-import com.example.test2.features.exportimport.domain.local.ImportUseCaseImpl
-import com.example.test2.features.exportimport.domain.repository.ExportUseCaseRepositoryImpl
-import com.example.test2.features.exportimport.domain.repository.ImportUseCaseRepositoryImpl
+import com.example.test2.features.export.domain.local.ExportUseCaseImpl
+import com.example.test2.features.importer.domain.local.ImportUseCaseImpl
+import com.example.test2.features.export.domain.repository.ExportUseCaseRepositoryImpl
+import com.example.test2.features.importer.domain.repository.ImportUseCaseRepositoryImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoDAOImpl
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity
 import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl

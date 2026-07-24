@@ -23,17 +23,21 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <!-- <data android:mimeType="application/json" /> -->
+                <!-- because the emitter app can be an absolute idiot-->
+                <data android:mimeType="*/*" />
+
+            </intent-filter>
         </activity>
         <activity
             android:name=".features.weight.ui.WeightActivity"
             android:exported="false"
             android:label="@string/title_activity_weight"
-            android:theme="@style/Theme.Test2"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".features.water.ui.WaterActivity"
-            android:exported="false"
-            android:label="@string/title_activity_water"
             android:theme="@style/Theme.Test2"
             android:windowSoftInputMode="adjustResize" />
 

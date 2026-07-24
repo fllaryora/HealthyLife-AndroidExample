@@ -11,10 +11,13 @@ import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.dailyactivity.data.repository.ActivityRepositoryImpl
 import com.example.test2.features.dailyactivity.ui.ActivityScreen
 import com.example.test2.features.dailyactivity.ui.viewmodel.ActivityViewModel
-import com.example.test2.features.exportimport.domain.repository.ExportUseCaseRepositoryImpl
-import com.example.test2.features.exportimport.ui.ExportScreen
+import com.example.test2.features.export.domain.repository.ExportUseCaseRepositoryImpl
+import com.example.test2.features.export.ui.ExportScreen
 import com.example.test2.features.home.ui.HomeScreen
-import com.example.test2.features.exportimport.ui.viewmodel.ExportViewModel
+import com.example.test2.features.export.ui.viewmodel.ExportViewModel
+import com.example.test2.features.importer.domain.repository.ImportUseCaseRepositoryImpl
+import com.example.test2.features.importer.domain.ui.ImportScreen
+import com.example.test2.features.importer.domain.ui.viewmodel.ImportViewModel
 import com.example.test2.features.numbertwo.data.repository.NumberTwoRepositoryImpl
 import com.example.test2.features.numbertwo.ui.NumberTwoScreen
 import com.example.test2.features.numbertwo.ui.viewmodel.NumberTwoViewModel
@@ -59,6 +62,9 @@ fun HomeGraph(
                 },
                 onExport = {
                     navController.navigate("export")
+                },
+                onImport = {
+                    navController.navigate("import")
                 },
             )
         }
@@ -170,6 +176,17 @@ fun HomeGraph(
             )
 
             ExportScreen(viewModel)
+        }
+
+        composable("import") {
+
+            val viewModel: ImportViewModel = viewModel(
+                factory = ImportViewModel.Factory(
+                    ImportUseCaseRepositoryImpl
+                )
+            )
+
+            ImportScreen(viewModel)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.test2.features.exportimport.data.local
+package com.example.test2.features.export.data.local
 
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.numbertwo.data.local.NumberTwoEntity

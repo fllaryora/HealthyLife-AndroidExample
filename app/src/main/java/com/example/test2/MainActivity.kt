@@ -1,6 +1,9 @@
 package com.example.test2
 
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,11 +18,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
+import com.example.test2.features.importer.domain.repository.ImportUseCaseRepositoryImpl
 import com.example.test2.framework.ui.navigation.favotites.FavoritesGraph
 import com.example.test2.framework.ui.navigation.home.HomeGraph
 import com.example.test2.framework.ui.navigation.profile.ProfileGraph
 import com.example.test2.ui.theme.Test2Theme
+import com.example.test2.viewmodel.MainViewModel
 
 
 enum class AppDestinations(
@@ -42,8 +48,19 @@ enum class AppDestinations(
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var mainViewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mainViewModel = ViewModelProvider(
+            this,
+            MainViewModel.Factory(
+                ImportUseCaseRepositoryImpl
+            )
+        )[MainViewModel::class.java]
+
+        handleSendIntent(intent)
 
         enableEdgeToEdge()
 
@@ -51,6 +68,38 @@ class MainActivity : ComponentActivity() {
             Test2Theme {
                 Test2App()
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        handleSendIntent(intent)
+    }
+
+    private fun handleSendIntent(intent: Intent) {
+
+        if (intent.action != Intent.ACTION_SEND) {
+            return
+        }
+        val fileUri: Uri? =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(
+                    Intent.EXTRA_STREAM,
+                    Uri::class.java
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(
+                    Intent.EXTRA_STREAM
+                )
+            }
+
+        fileUri?.let {
+            mainViewModel.importFromOtherApp(
+                context = this,
+                uri = it
+            )
         }
     }
 }
