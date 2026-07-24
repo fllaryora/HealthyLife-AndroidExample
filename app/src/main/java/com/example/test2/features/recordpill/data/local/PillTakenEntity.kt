@@ -1,5 +1,6 @@
 package com.example.test2.features.recordpill.data.local
 
+import com.example.test2.data.entities.behaviors.ImportableTaken
 import com.example.test2.data.entities.behaviors.TodoLineable
 import com.example.test2.features.pill.data.local.PillEntity
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
@@ -61,7 +62,7 @@ data class PillTakenEntity (
     val isTaken: Boolean = true, //always true otherwise the row would not exist
     @Transient // will not be store in database
     var exportPillId : Long = 0L, //used in export action
-) : TodoLineable {
+) : TodoLineable, ImportableTaken<PillTakenEntity, PillEntity,Long> {
     //ignore
     @kotlinx.serialization.Transient
     var pillEntity = ToOne<PillEntity>(this, PillTakenEntity_.pillEntity)
@@ -96,6 +97,20 @@ data class PillTakenEntity (
      */
 
     override fun isTakenT() = isTaken
+
+    override fun prepareForImport(owner: PillEntity): PillTakenEntity {
+        return copy(id = 0L).apply {
+            //used in import action
+            pillEntity.target = owner
+            //used in export action
+            exportPillId = owner.id
+        }
+    }
+
+    override fun getOwnerId(): Long {
+        return exportPillId
+    }
+
     companion object{
         fun create(pillEntityAsociated: PillEntity, id: Long = 0L, date: OffsetDateTime = OffsetDateTime.now(), isTaken: Boolean = true):PillTakenEntity {
             return PillTakenEntity (id = id, date= date, isTaken = isTaken).apply {
