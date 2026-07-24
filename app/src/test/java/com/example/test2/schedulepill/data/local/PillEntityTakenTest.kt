@@ -2,6 +2,10 @@ package com.example.test2.schedulepill.data.local
 
 import com.example.test2.TestDateFactory
 import com.example.test2.data.converter.TimeConverter
+import com.example.test2.data.entities.behaviors.groupAndImportResolvingOwners
+import com.example.test2.data.entities.behaviors.importAndGetComparableIDsMap
+import com.example.test2.data.entities.behaviors.prepareForImport
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.pill.data.local.PillDAOImpl
@@ -26,6 +30,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.net.URL
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlin.random.Random
@@ -253,6 +258,78 @@ open class PillEntityTakenTest {
              }*/
         }
 
+    }
+
+    private fun takeTheFileFromGradle(file: String = "pills.json") : String {
+        val expectedDataBaseFile: URL = javaClass.classLoader!!
+            .getResource(file)
+
+        /*This part is a crapy part
+        because it will fail outside gradle world
+        * */
+        println(expectedDataBaseFile.file)
+        assertEndsWith(
+            "The path of the resource file",
+            "app/build/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out/${file}",
+            expectedDataBaseFile.file
+        )
+
+
+        val databaseString = javaClass.classLoader!!
+            .getResource(file)!!
+            .readText()
+
+        return databaseString
+    }
+
+
+    /**
+     * Validates the complete import workflow:
+     *
+     * 1. Deserialize DailyActivityEntity list from exported JSON.
+     * 2. Deserialize ActivityTakenEntity list from exported JSON.
+     * 3. Import DailyActivityEntity instances in a stable order.
+     * 4. Preserve a mapping between exported IDs and newly generated IDs.
+     * 5. Verify that all DailyActivityEntity records were imported.
+     * 6. Group ActivityTakenEntity records by exportActivityId.
+     * 7. Resolve each exported activity reference to the newly imported activity.
+     * 8. Import ActivityTakenEntity records while rebuilding ObjectBox relations.
+     * 9. Verify that all ActivityTakenEntity records were imported.
+     * 10. Verify that every imported ActivityTakenEntity has a valid activity relation.
+     */
+    @Test
+    fun decodeTest() {
+        // Arrange
+        // list of activities deserialized
+        val importEntity :List<PillEntity> = Json.decodeFromString<List<PillEntity>>(takeTheFileFromGradle())
+        // list of activities taken deserialized
+        val importTakenEntity :List<PillTakenEntity> = Json.decodeFromString<List<PillTakenEntity>>(takeTheFileFromGradle("pillTaken.json"))
+
+        val importedActivitiesByOldId: Map<Long, PillEntity > =
+            importEntity.importAndGetComparableIDsMap( insert = { activityToInsert: PillEntity ->
+                // Act
+                PillDAOImpl.insert(activityToInsert)
+            } )
+
+        // Arrange
+        importTakenEntity.groupAndImportResolvingOwners(
+            importedOwnersByOldId = importedActivitiesByOldId,
+            insert = { prepared: PillTakenEntity ->
+                PillTakenDAOImpl.insert(prepared)
+            })
+
+        // Assert
+        val list: List<PillEntity> = PillDAOImpl.getPills()
+        Assert.assertEquals(importEntity.size, list.size)
+
+        val listTaken: List<PillTakenEntity> = PillTakenDAOImpl.getAll()
+        Assert.assertEquals(importTakenEntity.size, listTaken.size)
+        listTaken.forEach {
+            Assert.assertTrue(
+                "pills relation was not restored",
+                it.pillEntity.targetId > 0L
+            )
+        }
     }
 
     companion object {
