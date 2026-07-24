@@ -214,7 +214,7 @@ open class ExportUseCaseRepositoryImplTest {
         val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
         )
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+
         dates.take(36)
             .forEach { someDayAtTheMorning: OffsetDateTime ->
                 pillEntityList.forEach {
@@ -285,7 +285,6 @@ open class ExportUseCaseRepositoryImplTest {
         val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0
         )
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
         dates.take(36)
             .forEach { someDayAtTheMorning: OffsetDateTime ->
                 activities6OfWeek.forEach {

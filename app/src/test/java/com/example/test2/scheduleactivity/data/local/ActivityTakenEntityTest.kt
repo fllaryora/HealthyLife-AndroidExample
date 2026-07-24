@@ -80,13 +80,13 @@ open class ActivityTakenEntityTest {
         ActivityDAOImpl.insert(activity)
         val actList : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
 
-        var actT1 = ActivityTakenDAOImpl.getActivityTaken(actList.first(), 0, 20L)
+        val actT1 = ActivityTakenDAOImpl.getActivityTaken(actList.first(), 0, 20L)
         Assert.assertEquals(0, actT1.first.size)
 
-        var actT2 = ActivityTakenDAOImpl.getActivityTakenList(actList.first(), 0, 20L)
+        val actT2 = ActivityTakenDAOImpl.getActivityTakenList(actList.first(), 0, 20L)
         Assert.assertEquals(0, actT2.size)
 
-        var actT3 = ActivityTakenDAOImpl.getAllByActivity(actList.first())
+        val actT3 = ActivityTakenDAOImpl.getAllByActivity(actList.first())
         Assert.assertEquals(0, actT3.size)
     }
 
@@ -151,14 +151,14 @@ open class ActivityTakenEntityTest {
 
         val actList : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
 
-        var actT1 = ActivityTakenDAOImpl.getActivityTaken(actList.first(), 0, 20L)
+        val actT1 = ActivityTakenDAOImpl.getActivityTaken(actList.first(), 0, 20L)
         Assert.assertEquals(20, actT1.first.size)
 
-        var actT2 = ActivityTakenDAOImpl.getActivityTakenList(actList.first(), 0, 20L)
+        val actT2 = ActivityTakenDAOImpl.getActivityTakenList(actList.first(), 0, 20L)
         Assert.assertEquals(20, actT2.size)
 
         //1 activity  in 36 days
-        var actT3 = ActivityTakenDAOImpl.getAllByActivity(actList.first())
+        val actT3 = ActivityTakenDAOImpl.getAllByActivity(actList.first())
         Assert.assertEquals(36, actT3.size)
 
     }
@@ -327,7 +327,7 @@ open class ActivityTakenEntityTest {
             }
 
         // 6 activities , taken in 36 days
-        var allActivitiesTaken : List<ActivityTakenEntity> = ActivityTakenDAOImpl.getAll()
+        val allActivitiesTaken : List<ActivityTakenEntity> = ActivityTakenDAOImpl.getAll()
 
         assertEquals(36 * 8, allActivitiesTaken.size)
 
