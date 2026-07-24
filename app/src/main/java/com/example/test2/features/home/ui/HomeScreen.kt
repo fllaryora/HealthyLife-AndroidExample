@@ -12,6 +12,7 @@ fun HomeScreen(
     onNumberTwo: ()-> Unit,
     onPill: ()-> Unit,
     onActivity: ()-> Unit,
+    onExport: ()-> Unit,
 ) {
 
     Column {
@@ -50,6 +51,13 @@ fun HomeScreen(
             }
         ) {
             Text("Abrir  Activity  Screen")
+        }
+        Button(
+            onClick = {
+                onExport()
+            }
+        ) {
+            Text("Abrir Export Screen")
         }
     }
 }
