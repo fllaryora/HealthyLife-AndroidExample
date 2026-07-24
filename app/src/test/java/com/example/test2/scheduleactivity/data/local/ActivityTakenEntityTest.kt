@@ -2,6 +2,7 @@ package com.example.test2.scheduleactivity.data.local
 
 import com.example.test2.TestDateFactory
 import com.example.test2.data.entities.behaviors.importAndGetComparableIDsMap
+import com.example.test2.data.entities.behaviors.importTakenEntitiesResolvingOwners
 import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
@@ -416,18 +417,12 @@ open class ActivityTakenEntityTest {
 
         // 3. Insert ActivityTakenEntity using  DailyActivityEntity
         // DailyActivityEntity has already persisted
-        takenGroupedByActivity.forEach { (oldActivityId: Long, takenList: List<ActivityTakenEntity>) ->
-            val importedActivity: DailyActivityEntity = importedActivitiesByOldId[oldActivityId]
-                    ?: error("DailyActivityEntity not found. oldId=$oldActivityId")
-
-            takenList.forEach { activityTaken:ActivityTakenEntity ->
-
-                val prepared: ActivityTakenEntity =
-                    activityTaken.prepareForImport(owner = importedActivity)
-                // Act
+        takenGroupedByActivity.importTakenEntitiesResolvingOwners(
+            importedOwnersByOldId = importedActivitiesByOldId,
+            insert = { prepared: ActivityTakenEntity ->
                 ActivityTakenDAOImpl.insert(prepared)
-            }
-        }
+        })
+
         // Assert
         val list: List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
         Assert.assertEquals(importEntity.size, list.size)
