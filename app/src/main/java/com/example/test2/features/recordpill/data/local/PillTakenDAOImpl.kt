@@ -1,7 +1,6 @@
 package com.example.test2.features.recordpill.data.local
 
 import com.example.test2.data.converter.TimeConverter
-import com.example.test2.data.dao.behaviors.TodoLineableDAO
 import com.example.test2.features.pill.data.local.PillEntity
 import io.objectbox.Box
 import io.objectbox.query.Query

@@ -2,13 +2,10 @@ package com.example.test2.features.dailyactivity.ui
 
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,9 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.dailyactivity.ui.viewmodel.ActivityViewModel
 import com.example.test2.features.dailyactivity.ui.components.FieldForAddNewActivity
 import com.example.test2.features.dailyactivity.ui.components.SingleActivityItem
+import com.example.test2.features.dailyactivity.ui.viewmodel.ActivityViewModel
 
 @Composable
 fun ActivityScreen(

@@ -4,21 +4,18 @@ import com.example.test2.features.pill.data.local.PillEntity
 import com.example.test2.features.recordpill.data.local.PillTakenDAO
 import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import com.example.test2.features.recordpill.data.local.PillTakenEntity_
-
 import io.objectbox.Box
-import kotlinx.coroutines.flow.Flow
 import io.objectbox.kotlin.flow
 import io.objectbox.query.Query
 import io.objectbox.query.QueryBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
-import kotlin.collections.toList
-
 
 
 /**

@@ -1,6 +1,5 @@
 package com.example.test2.features.dailyactivity.data.repository
 
-import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.features.dailyactivity.data.local.ActivityDAO
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import kotlinx.coroutines.CoroutineDispatcher

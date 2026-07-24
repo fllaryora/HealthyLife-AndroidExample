@@ -36,7 +36,6 @@ import com.example.test2.features.water.ui.viewmodel.WaterViewModel
 import com.example.test2.ui.theme.Test2Theme
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import kotlin.text.forEach
 
 class WaterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

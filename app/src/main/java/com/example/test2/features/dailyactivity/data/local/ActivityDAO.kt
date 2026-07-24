@@ -1,6 +1,5 @@
 package com.example.test2.features.dailyactivity.data.local
 
-import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import io.objectbox.Box
 
 /**

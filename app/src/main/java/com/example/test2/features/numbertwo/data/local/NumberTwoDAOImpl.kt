@@ -1,6 +1,5 @@
 package com.example.test2.features.numbertwo.data.local
 
-import com.example.test2.data.dao.behaviors.TodoLineableDAO
 import io.objectbox.Box
 import io.objectbox.exception.UniqueViolationException
 import io.objectbox.query.Query

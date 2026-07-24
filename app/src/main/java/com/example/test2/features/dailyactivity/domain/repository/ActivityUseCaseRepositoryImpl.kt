@@ -9,8 +9,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
-import kotlin.collections.List
-import kotlin.collections.first
 
 object ActivityUseCaseRepositoryImpl : ActivityUseCaseRepository {
     /**

@@ -19,7 +19,6 @@ import com.example.test2.features.recordpill.data.local.PillTakenEntity
 import com.example.test2.features.water.data.local.WaterDAO
 import com.example.test2.features.water.data.local.WaterEntity
 import com.example.test2.features.weight.data.local.WeightDAO
-import com.example.test2.features.weight.data.local.WeightDAOImpl
 import com.example.test2.features.weight.data.local.WeightEntity
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json

@@ -1,7 +1,6 @@
 package com.example.test2.features.recordactivity.data.local
 
 import com.example.test2.data.converter.TimeConverter
-import com.example.test2.data.dao.behaviors.TodoLineableDAO
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import io.objectbox.Box
 import io.objectbox.query.Query

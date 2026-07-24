@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
-import kotlin.collections.toList
 
 object ActivityTakenRepositoryImpl : ActivityTakenRepository {
 

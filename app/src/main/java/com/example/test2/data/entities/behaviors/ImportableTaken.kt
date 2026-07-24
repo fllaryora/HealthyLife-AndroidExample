@@ -1,8 +1,5 @@
 package com.example.test2.data.entities.behaviors
 
-import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
-import kotlin.Long
-
 interface ImportableTaken<
         IMPORTABLE_TAKEN,
         OWNER,

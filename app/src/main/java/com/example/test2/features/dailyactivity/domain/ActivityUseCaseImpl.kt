@@ -4,7 +4,6 @@ import com.example.test2.data.dao.helpers.FlatActivities
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.features.dailyactivity.data.local.ActivityDAO
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
-import com.example.test2.features.dailyactivity.data.repository.ActivityRepositoryImpl
 
 object  ActivityUseCaseImpl : ActivityUseCase {
 

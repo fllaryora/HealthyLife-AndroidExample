@@ -2,7 +2,6 @@ package com.example.test2.features.weight.data.repository
 
 import com.example.test2.features.weight.data.local.WeightDAO
 import com.example.test2.features.weight.data.local.WeightEntity
-import io.objectbox.Box
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 

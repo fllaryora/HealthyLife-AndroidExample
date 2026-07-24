@@ -13,13 +13,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
 import com.example.test2.features.recordactivity.ui.viewmodel.ActivityTakenViewModel
-
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
