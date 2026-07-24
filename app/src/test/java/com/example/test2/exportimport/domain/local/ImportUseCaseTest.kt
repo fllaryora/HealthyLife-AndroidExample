@@ -136,8 +136,8 @@ open class ImportUseCaseTest {
         checkWeights()
         checkWaters()
         checkNumberTwo()
-
         checkPillTaken()
+        checkActivityTaken()
 
     }
 
@@ -199,7 +199,7 @@ open class ImportUseCaseTest {
         val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
             2025, 10, 25, 14, 30, 0, 0,
         )
-        val iterator : Iterator<Float> = TestDateFactory.weightSequence().iterator()
+
         dates.take(36)
             .forEach { someDayAtTheMorning: OffsetDateTime ->
                 expected.forEachIndexed { index, entity ->
@@ -209,10 +209,182 @@ open class ImportUseCaseTest {
                 }
             }
 
-        val actualTaken : List<PillTakenEntity> = PillTakenDAOImpl.getAll()
+        val actualTaken : List<PillTakenEntity> = PillTakenDAOImpl.getAll().map{
+            it.copy(exportPillId = it.pillEntity.target.id)
+        }
 
-        assertEquals(expectedTaken, actualTaken)
+        val actualMap = actualTaken.groupBy { it.exportPillId }
+        val expectedMap = expectedTaken.groupBy { it.exportPillId }
+
+        assertEquals(
+            expectedMap.keys,
+            actualMap.keys
+        )
+
+        expectedMap.forEach {
+                (ownerId: Long, expectedList: List<PillTakenEntity>) ->
+
+            val actualList: List<PillTakenEntity> =
+                actualMap[ownerId]
+                    ?: error("Missing ownerId=$ownerId")
+
+            val expectedSorted: List<PillTakenEntity> =
+                expectedList.sortedBy {
+                    it.date
+                }
+
+            val actualSorted: List<PillTakenEntity> =
+                actualList.sortedBy {
+                    it.date
+                }
+
+            assertEquals(
+                expectedSorted.size,
+                actualSorted.size
+            )
+
+            expectedSorted.zip(actualSorted).forEach {
+                    (expectedEntity: PillTakenEntity,
+                        actualEntity: PillTakenEntity) ->
+
+                assertEquals(
+                    expectedEntity.date,
+                    actualEntity.date
+                )
+
+                assertEquals(
+                    expectedEntity.exportPillId,
+                    actualEntity.exportPillId
+                )
+            }
+        }
     }
 
+
+    private fun checkActivityTaken() {
+        val actualActivityList : List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
+        val gym: Set<DaysOfWeekEnum> = setOf(
+            DaysOfWeekEnum.MONDAY,
+            DaysOfWeekEnum.WEDNESDAY,
+            DaysOfWeekEnum.FRIDAY
+        )
+
+        val pillDays: Set<DaysOfWeekEnum> = setOf(
+            DaysOfWeekEnum.TUESDAY,
+            DaysOfWeekEnum.THURSDAY,
+            DaysOfWeekEnum.SATURDAY
+        )
+
+        val expected: List<DailyActivityEntity> = listOf(
+            DailyActivityEntity(
+                1L, "Pesarse", 8, 0, daysOfWeek = DaysOfWeekEnum.ALL.value,
+                TypeofRecorder.WEIGHT_RECORDER.value
+            ),
+            DailyActivityEntity(
+                2L, "Desayunar", 9, 0, daysOfWeek = DaysOfWeekEnum.ALL.value,
+                TypeofRecorder.NONE.value
+            ),
+            DailyActivityEntity(
+                3L, "Tomar Agua", 11, 0, daysOfWeek = DaysOfWeekEnum.ALL.value,
+                TypeofRecorder.WATER_RECORDER.value
+            ),
+            DailyActivityEntity( // "Me tomo una agaromba y todo me chupa un huevo"
+                4L, "Recordatorio de tomar la agaromba", 16, 0, daysOfWeek = pillDays.toMask(),
+                TypeofRecorder.PILL_RECORDER.value
+            ),
+            DailyActivityEntity(
+                5L, "Cenar", 21, 0, daysOfWeek = DaysOfWeekEnum.ALL.value,
+                TypeofRecorder.NONE.value
+            ),
+            DailyActivityEntity(
+                6L, "Almorzar", 13, 0, daysOfWeek = DaysOfWeekEnum.ALL.value,
+                TypeofRecorder.NONE.value
+            ),
+            DailyActivityEntity(
+                7L, "Merendar", 17, 0, daysOfWeek = DaysOfWeekEnum.ALL.value,
+                TypeofRecorder.NONE.value
+            ),
+            DailyActivityEntity(
+                8L, "Actividad fisica", 18, 0, daysOfWeek = gym.toMask(),
+                TypeofRecorder.NONE.value
+            ),
+        )
+
+        val rating = TestDateFactory.ratingSequence().iterator()
+
+        val dates : Sequence<OffsetDateTime> = TestDateFactory.dailySequence(
+            2025, 10, 25, 14, 30, 0, 0
+        )
+        val expectedTaken: MutableList<ActivityTakenEntity> = mutableListOf<ActivityTakenEntity>()
+
+        dates.take(36)
+            .forEach { someDayAtTheMorning: OffsetDateTime ->
+                expected.forEachIndexed { index, entity ->
+                    val activityTakenEntity : ActivityTakenEntity =
+                        ActivityTakenEntity.create(
+                            date = someDayAtTheMorning,
+                            rating = rating.next(),
+                            activityEntityAsociated = entity
+                        )
+
+                    activityTakenEntity.id =  (index+1).toLong()
+                    expectedTaken.add(activityTakenEntity)
+                }
+            }
+
+
+        val actualTaken : List<ActivityTakenEntity> = ActivityTakenDAOImpl.getAll().map{
+            it.copy(exportActivityId = it.activity.target.id)
+        }
+
+        assertEquals(expected, actualActivityList.sortedBy { it.id })
+
+        val actualMap = actualTaken.groupBy { it.exportActivityId }
+        val expectedMap = expectedTaken.groupBy { it.exportActivityId }
+
+        assertEquals(
+            expectedMap.keys,
+            actualMap.keys
+        )
+
+
+        expectedMap.forEach {
+                (ownerId: Long, expectedList: List<ActivityTakenEntity>) ->
+
+            val actualList: List<ActivityTakenEntity> =
+                actualMap[ownerId]
+                    ?: error("Missing ownerId=$ownerId")
+
+            val expectedSorted: List<ActivityTakenEntity> =
+                expectedList.sortedBy {
+                    it.date
+                }
+
+            val actualSorted: List<ActivityTakenEntity> =
+                actualList.sortedBy {
+                    it.date
+                }
+
+            assertEquals(
+                expectedSorted.size,
+                actualSorted.size
+            )
+
+            expectedSorted.zip(actualSorted).forEach {
+                    (expectedEntity: ActivityTakenEntity,
+                        actualEntity: ActivityTakenEntity) ->
+
+                assertEquals(
+                    expectedEntity.date,
+                    actualEntity.date
+                )
+
+                assertEquals(
+                    expectedEntity.exportActivityId,
+                    actualEntity.exportActivityId
+                )
+            }
+        }
+    }
 }
 
