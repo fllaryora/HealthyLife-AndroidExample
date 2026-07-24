@@ -76,4 +76,11 @@ import java.util.Locale
     override fun getLabel() = String.format(Locale.getDefault(),"%.2f", volume)
     override fun prepareForImport(): WaterEntity = copy(id = 0L)
     override fun importSortKey(): OffsetDateTime = date
+    override fun getIdForImport(): Long {
+        return id
     }
+
+    override fun setIdForImport(newId: Long) {
+        id = newId
+    }
+}

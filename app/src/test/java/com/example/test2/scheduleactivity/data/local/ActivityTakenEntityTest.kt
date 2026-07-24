@@ -1,23 +1,21 @@
 package com.example.test2.scheduleactivity.data.local
 
 import com.example.test2.TestDateFactory
+import com.example.test2.data.entities.behaviors.importAndGetComparableIDsMap
+import com.example.test2.data.entities.behaviors.prepareForImport
 import com.example.test2.data.entities.enums.DaysOfWeekEnum
 import com.example.test2.data.entities.enums.TypeofRecorder
 import com.example.test2.data.entities.enums.toMask
+import com.example.test2.exportimport.domain.local.assertEndsWith
 import com.example.test2.features.MyObjectBox
 import com.example.test2.features.dailyactivity.data.local.ActivityDAOImpl
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.features.exportimport.domain.local.jsonPropertiesForExport
 import com.example.test2.features.recordactivity.data.local.ActivityTakenDAOImpl
 import com.example.test2.features.recordactivity.data.local.ActivityTakenEntity
-import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
-import com.example.test2.framework.data.database.TimeConverterForObjectBox
 import io.objectbox.Box
 import io.objectbox.BoxStore
-import io.objectbox.annotation.Convert
-import io.objectbox.annotation.Id
 import io.objectbox.config.DebugFlags
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -34,9 +32,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.net.URL
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import kotlin.random.Random
+import kotlin.collections.get
+import kotlin.text.set
 
 open class ActivityTakenEntityTest {
 
@@ -358,7 +357,90 @@ open class ActivityTakenEntityTest {
 
     }
 
+    private fun takeTheFileFromGradle(file: String = "activities.json") : String {
+        val expectedDataBaseFile: URL = javaClass.classLoader!!
+            .getResource(file)
 
+        /*This part is a crapy part
+        because it will fail outside gradle world
+        * */
+        println(expectedDataBaseFile.file)
+        assertEndsWith(
+            "The path of the resource file",
+            "app/build/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out/${file}",
+            expectedDataBaseFile.file
+        )
+
+
+        val databaseString = javaClass.classLoader!!
+            .getResource(file)!!
+            .readText()
+
+        return databaseString
+    }
+
+    /**
+     * Validates the complete import workflow:
+     *
+     * 1. Deserialize DailyActivityEntity list from exported JSON.
+     * 2. Deserialize ActivityTakenEntity list from exported JSON.
+     * 3. Import DailyActivityEntity instances in a stable order.
+     * 4. Preserve a mapping between exported IDs and newly generated IDs.
+     * 5. Verify that all DailyActivityEntity records were imported.
+     * 6. Group ActivityTakenEntity records by exportActivityId.
+     * 7. Resolve each exported activity reference to the newly imported activity.
+     * 8. Import ActivityTakenEntity records while rebuilding ObjectBox relations.
+     * 9. Verify that all ActivityTakenEntity records were imported.
+     * 10. Verify that every imported ActivityTakenEntity has a valid activity relation.
+     */
+    @Test
+    fun decodeTest() {
+        // Arrange
+        // list of activities deserialized
+        val importEntity :List<DailyActivityEntity> = Json.decodeFromString<List<DailyActivityEntity>>(takeTheFileFromGradle())
+        // list of activities taken deserialized
+        val importTakenEntity :List<ActivityTakenEntity> = Json.decodeFromString<List<ActivityTakenEntity>>(takeTheFileFromGradle("activityTaken.json"))
+
+        val importedActivitiesByOldId: Map<Long, DailyActivityEntity > =
+        importEntity.importAndGetComparableIDsMap( insert = { activityToInsert: DailyActivityEntity ->
+            // Act
+            ActivityDAOImpl.insert(activityToInsert)
+        } )
+
+        // Arrange
+        // 2. Group All ActivityTakenEntity in the list by exportActivityId
+        val takenGroupedByActivity : Map <Long, List<ActivityTakenEntity>> =
+            importTakenEntity.groupBy { activityTakenEntity : ActivityTakenEntity->
+                activityTakenEntity.exportActivityId
+            }
+
+        // 3. Insert ActivityTakenEntity using  DailyActivityEntity
+        // DailyActivityEntity has already persisted
+        takenGroupedByActivity.forEach { (oldActivityId: Long, takenList: List<ActivityTakenEntity>) ->
+            val importedActivity: DailyActivityEntity = importedActivitiesByOldId[oldActivityId]
+                    ?: error("DailyActivityEntity not found. oldId=$oldActivityId")
+
+            takenList.forEach { activityTaken:ActivityTakenEntity ->
+
+                val prepared: ActivityTakenEntity =
+                    activityTaken.prepareForImport(owner = importedActivity)
+                // Act
+                ActivityTakenDAOImpl.insert(prepared)
+            }
+        }
+        // Assert
+        val list: List<DailyActivityEntity> = ActivityDAOImpl.getActivities()
+        Assert.assertEquals(importEntity.size, list.size)
+
+        val listTaken: List<ActivityTakenEntity> = ActivityTakenDAOImpl.getAll()
+        Assert.assertEquals(importTakenEntity.size, listTaken.size)
+        listTaken.forEach {
+            Assert.assertTrue(
+                "Activity relation was not restored",
+                it.activity.targetId > 0L
+            )
+        }
+    }
 
     companion object {
         private val TEST_DIRECTORY = File("objectbox-example/test-db")

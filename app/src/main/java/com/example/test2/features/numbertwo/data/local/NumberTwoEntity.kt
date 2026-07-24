@@ -34,4 +34,12 @@ data class NumberTwoEntity (
     override fun importSortKey(): OffsetDateTime {
         return date
     }
+
+    override fun getIdForImport(): Long {
+        return id
+    }
+
+    override fun setIdForImport(newId: Long) {
+        id = newId
+    }
 }

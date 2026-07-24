@@ -71,4 +71,12 @@ data class DailyActivityEntity (
     override fun importSortKey(): Long {
         return id
     }
+
+    override fun getIdForImport(): Long {
+        return id
+    }
+
+    override fun setIdForImport(newId: Long) {
+        id = newId
+    }
 }

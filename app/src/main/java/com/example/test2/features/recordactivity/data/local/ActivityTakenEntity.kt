@@ -1,6 +1,7 @@
 package com.example.test2.features.recordactivity.data.local
 
 import com.example.test2.data.entities.behaviors.Graphable
+import com.example.test2.data.entities.behaviors.ImportableTaken
 import com.example.test2.data.entities.behaviors.TodoLineable
 import com.example.test2.features.dailyactivity.data.local.DailyActivityEntity
 import com.example.test2.framework.data.database.TimeConverterForKotlinxSerializable
@@ -66,7 +67,7 @@ data class ActivityTakenEntity (
     val isTaken: Boolean = true, //always true otherwise the row would not exist
     @Transient // will not be store in database
     var exportActivityId : Long = 0L, //used in export action
-) : TodoLineable, Graphable {
+) : TodoLineable, Graphable, ImportableTaken<ActivityTakenEntity, DailyActivityEntity, Long> {
 
     /**
      * Reference to the activity associated with this occurrence.
@@ -118,6 +119,16 @@ data class ActivityTakenEntity (
      */
 
     override fun isTakenT() = isTaken
+
+    override fun prepareForImport(owner: DailyActivityEntity): ActivityTakenEntity {
+        return copy(id = 0L).apply {
+            //used in import action
+            activity.target = owner
+            //used in export action
+            exportActivityId = owner.id
+        }
+    }
+
     companion object{
         fun create(activityEntityAsociated: DailyActivityEntity, id: Long = 0L, date: OffsetDateTime = OffsetDateTime.now(), rating: Int = 0, isTaken: Boolean = true):ActivityTakenEntity {
             return ActivityTakenEntity (id = id, date= date, rating = rating, isTaken = isTaken).apply {
