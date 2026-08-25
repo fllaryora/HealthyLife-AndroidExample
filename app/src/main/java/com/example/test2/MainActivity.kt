@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleSendIntent(intent: Intent) {
-
+        //Handle only things related to content receiver
         if (intent.action != Intent.ACTION_SEND) {
             return
         }
