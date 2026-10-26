@@ -7,4 +7,48 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colors taken from http://www.colorsontheweb.com/Color-Tools/Color-Wizard
+ for the color #c2261a -->
+    <!--- Color wheel https://color.adobe.com/create/color-wheel-->
+    <!--C -->
+    <color name="colorPrimary">#ED7E24</color>
+    <!-- Complementary list  -->
+    <color name="colorGreen">#24ed7e</color>
+    <color name="colorBlue">#2493ed</color>
+    <color name="colorAccent">#edb024</color>
+    <color name="colorGray">#6e6e6e</color>
+    <color name="colorGrayDarker">#4e4e4e</color>
+    <color name="colorWhite">@android:color/white</color>
+    <color name="colorBlack">@android:color/black</color>
+
+    <!-- tint shade variation list  -->
+
+    <color name="colorRedDarker">#9e4e0d</color>
+    <color name="colorPrimaryDark">#cd6511</color>
+    <!-- android - primary  -->
+    <color name="colorRedLight">#ed7e24</color>
+    <color name="colorRedLighter">#f19a53</color>
+    <color name="colorGrayLighter">#F0F0F0</color>
+    <!-- color analogous list  -->
+    <color name="colorFuchsia">#F4406F</color>
+    <color name="colorYellow">#ede324</color>
+    <color name="colorGreenStrong">#2eed24</color>
+    <color name="colorBlueStrong">#2493ed</color>
+
+    <color name="colorCard">#FFEBEE</color>
+    <color name="colorGreenCard">#EFFFF8</color>
+    <color name="colorAccentFaded">#40edb024</color>
+    <color name="colorAccentFadedPDF">#FFF8F3</color>
+    <color name="colorBlueFaded">#402493ed</color>
+    <color name="colorGreenStrongFaded">#402eed24</color>
+    <color name="colorWhiteFaded">#00FFFFFF</color>
+    <color name="colorGrayFaded">#406e6e6e</color>
+    <color name="colorCardFaded">#40FFEBEE</color>
+
+    <!--- FADE background -->
+    <color name="colorRedLightBG">#99f19a53</color>
+    <color name="colorPrimaryBG">#99ED7E24</color>
+    <color name="colorRedLighterBG">#99f5b682</color>
+    <color name="colorRedDarkerBG">#999e4e0d</color>
 </resources>

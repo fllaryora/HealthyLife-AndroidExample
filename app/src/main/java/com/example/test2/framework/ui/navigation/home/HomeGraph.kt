@@ -1,8 +1,6 @@
 package com.example.test2.framework.ui.navigation.home
 
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -38,12 +36,11 @@ import com.example.test2.features.weight.ui.viewmodel.WeightViewModel
 
 @Composable
 fun HomeGraph(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     NavHost(
         navController = navController,
-        startDestination = "home",
-        modifier = Modifier.safeDrawingPadding()
+        startDestination = "home"
     ) {
 
         composable("home") {
