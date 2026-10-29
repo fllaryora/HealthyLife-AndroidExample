@@ -43,7 +43,7 @@ fun NavigationCard(
     data: NavigationCardData
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth().padding(15.dp),
+        modifier = Modifier.fillMaxWidth().padding(start =15.dp, end = 15.dp, top= 3.dp, bottom = 3.dp, ),
         contentAlignment = Alignment.Center
     ) {
         val iconCardSize: Dp =  56.dp
@@ -55,7 +55,7 @@ fun NavigationCard(
         Card (
             colors = CardDefaults.cardColors(containerColor = data.bgColor),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            modifier = Modifier.fillMaxWidth().padding(top= 15.dp, bottom = 15.dp,  start = halfIconCardSize , end = halfArrowCardSize ),
+            modifier = Modifier.fillMaxWidth().padding( start = halfIconCardSize , end = halfArrowCardSize ),
             shape = cardShape,
             onClick = {
                 onCardClick()
