@@ -1,6 +1,5 @@
-package com.example.test2
+package com.example.test2.ui.theme
 
-import StripedBackgroundPainter
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -12,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.test2.R
 
 @Preview(
     showBackground = true,

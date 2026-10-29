@@ -1,7 +1,10 @@
+package com.example.test2.ui.theme
+
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -13,7 +16,7 @@ class StripedBackgroundPainter(
     private val redDarker: Color
 ) : Painter() {
 
-    override val intrinsicSize = androidx.compose.ui.geometry.Size.Unspecified
+    override val intrinsicSize = Size.Unspecified
 
     override fun DrawScope.onDraw() {
         // Fondo blanco
@@ -27,7 +30,7 @@ class StripedBackgroundPainter(
             drawRect(
                 color = color,
                 topLeft = Offset(left.toPx(), 0f),
-                size = androidx.compose.ui.geometry.Size(
+                size = Size(
                     width = width.toPx(),
                     height = size.height
                 )
