@@ -152,5 +152,4 @@ fun PreviewNavCard( ) {
         }
 
     }
-
 }

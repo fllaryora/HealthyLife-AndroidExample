@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.test2.features.profile.ui.ScheduleScreen
 import com.example.test2.features.water.data.repository.WaterRepositoryImpl
 import com.example.test2.features.water.ui.WaterScreen
 import com.example.test2.features.water.ui.viewmodel.WaterViewModel
@@ -22,6 +23,11 @@ fun ProfileGraph(
     ) {
 
         composable("profile") {
+
+            ScheduleScreen()
+        }
+
+        composable("water") {
             val viewModel: WaterViewModel = viewModel(
                 factory = WaterViewModel.Factory(
                     WaterRepositoryImpl

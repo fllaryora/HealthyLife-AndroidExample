@@ -8,6 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.test2.features.measures.ui.MeasuresScreen
+import com.example.test2.features.water.data.repository.WaterRepositoryImpl
+import com.example.test2.features.water.ui.WaterScreen
+import com.example.test2.features.water.ui.viewmodel.WaterViewModel
 import com.example.test2.features.weight.data.repository.WeightRepositoryImpl
 import com.example.test2.features.weight.ui.WeightScreen
 import com.example.test2.features.weight.ui.viewmodel.WeightViewModel
@@ -34,7 +37,7 @@ fun MeasuresGraph(
                     //navController.navigate("pill")
                 },
                 onWaterIntake = {
-                    //navController.navigate("activity")
+                    navController.navigate("water")
                 },
             )
         }
@@ -47,6 +50,14 @@ fun MeasuresGraph(
             )
 
             WeightScreen(viewModel)
+        }
+        composable("water") {
+            val viewModel: WaterViewModel = viewModel(
+                factory = WaterViewModel.Factory(
+                    WaterRepositoryImpl
+                )
+            )
+            WaterScreen(viewModel)
         }
     }
 }
